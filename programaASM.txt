@@ -1,0 +1,3 @@
+;Programa en ASM que hackea un banco.
+mov ax, 4Ch
+int 21h

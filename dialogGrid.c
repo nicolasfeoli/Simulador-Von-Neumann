@@ -31,11 +31,12 @@ int main(int argc, char* argv[])
   //aqui empieza la puz
   button = gtk_button_new_with_label("abre ventana");
   bbtt = gtk_button_new_with_label("ni picha");
-  g_signal_connect(button,"clicked",G_CALLBACK(open_dialog),window);
+  g_signal_connect(button,"clicked",G_CALLBACK(open_dialog),window);//abre el dialog
   bto = gtk_button_new_with_label("no hacen");
   gtk_container_set_border_width(GTK_CONTAINER(window),150);
 
-  grid = gtk_grid_new();
+  //El grid para colocar los botones
+  grid = gtk_grid_new(); 
 
   gtk_container_add(GTK_CONTAINER(window),grid);
   gtk_grid_attach(GTK_GRID(grid),button,0,0,1,1);
