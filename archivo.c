@@ -1,12 +1,21 @@
 #include "stdio.h"
-
+#include <stdlib.h>
+#include <string.h>
 
 int abrirArchivo(const char *filename, char **result);
 
+void itoa(int, char*);
 
+void reverse(char*);
+/*
 int main(void){
 	FILE* archivo = fopen("programaASM.txt","r");
 	char contenido[255];
+
+	int a=54325;
+    char buffer[20];
+    itoa(a,buffer);   // here 2 means binary
+    printf("Binary value = %s\n", buffer);
 
 	//fscanf(archivo, "%s\n", contenido); // lee de un archivo hasta encontrar un espacio
 	fgets(contenido, 255, (FILE*) archivo); //lee 255 caracteres o hasta un cambio de linea
@@ -20,11 +29,11 @@ int main(void){
 	/*
 	for(i = 0; i < tamano; i++)
 		putchar(content[i]);
-	*/
+	
 	putchar('\n');
 	return 0;
 }
-
+*/
 
 /*
 abrirArchivo:
@@ -49,3 +58,31 @@ int abrirArchivo(const char *filename, char **result)
 	(*result)[tamano] = 0;
 	return tamano;
 }
+
+void itoa(int n, char s[])
+ {
+     int i, sign;
+
+     if ((sign = n) < 0)  /* record sign */
+         n = -n;          /* make n positive */
+     i = 0;
+     do {       /* generate digits in reverse order */
+         s[i++] = n % 10 + '0';   /* get next digit */
+     } while ((n /= 10) > 0);     /* delete it */
+     if (sign < 0)
+         s[i++] = '-';
+     s[i] = '\0';
+     reverse(s);
+}  
+
+ void reverse(char s[])
+ {
+     int i, j;
+     char c;
+
+     for (i = 0, j = strlen(s)-1; i<j; i++, j--) {
+         c = s[i];
+         s[i] = s[j];
+         s[j] = c;
+     }
+} 

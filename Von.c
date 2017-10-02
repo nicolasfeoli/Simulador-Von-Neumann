@@ -1,8 +1,32 @@
 #include "stdio.h"
 #include <gtk/gtk.h>
+
+#define MUCHO 2000
+
+//#include "archivo.h"
 /* 
       cc `pkg-config --cflags gtk+-3.0` Von.c `pkg-config --libs gtk+-3.0`
 */
+
+
+int abrirArchivo(const char *filename, char **result) 
+{ 
+  int tamano = 0;
+  FILE *f = fopen(filename, "rb");
+  if (f == NULL) 
+  {   //el archivo no abre
+    *result = NULL;
+    return -1;
+  } 
+  fseek(f, 0, SEEK_END);
+  tamano = ftell(f);
+  fseek(f, 0, SEEK_SET);
+  *result = (char *)malloc(tamano+1);
+
+  fclose(f);
+  (*result)[tamano] = 0;
+  return tamano;
+}
 
 static void open_dialog(GtkWidget* buton, gpointer window)
 {
@@ -44,13 +68,13 @@ static void open_dialog(GtkWidget* buton, gpointer window)
   gtk_grid_attach(GTK_GRID(grid),btoMBR,3,7,1,1);
 
   gtk_window_set_title (GTK_WINDOW(dialog), "Simulador");
-  gtk_window_set_resizable (GTK_WINDOW(dialog), FALSE);
+  gtk_window_set_resizable (GTK_WINDOW(dialog), TRUE);
   gtk_widget_show_all(dialog);
 }
 int main(int argc, char* argv[])
 {
   gtk_init(&argc,&argv);//INICIA GTK
-  GtkWidget* window,*button,*grid; //VARIABLES
+  GtkWidget* window,*button,*grid, *botonArchivo; //VARIABLES
 
 
   window = gtk_window_new(GTK_WINDOW_TOPLEVEL); //crea la ventana
@@ -60,6 +84,14 @@ int main(int argc, char* argv[])
   //aqui empieza la puz
   button = gtk_button_new_with_label("abre ventana");
   g_signal_connect(button,"clicked",G_CALLBACK(open_dialog),window);
+  //g_signal_connect (button, "clicked", G_CALLBACK (print_hello), NULL);
+
+  botonArchivo = gtk_button_new_with_label("Carga Archivo");
+
+  char* bufferMemoria; //Hay que reservar esta memoria para que no la reserve dentro de la funcion. Se cambia despues.
+  abrirArchivo("programaASM.txt", &bufferMemoria);
+
+  //g_signal_connect_swapped (botonArchivo, "clicked", G_CALLBACK (gtk_widget_destroy), window); // los parametros que estan despues del "clicked" son los parametros que recibe la funcion print hello que se puso en la primera linea
   
   gtk_container_set_border_width(GTK_CONTAINER(window),50);
 
