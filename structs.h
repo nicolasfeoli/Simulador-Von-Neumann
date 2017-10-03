@@ -1,10 +1,91 @@
 #include "stdio.h"
 #include "stdlib.h"
+#include <string.h>
+
+char prog[256][500];
+
 
 char* IR = "mov ax, 5";
-int PC = 23,ax = 233,ah,al,bx = 12,bh,bl,cx = 149,ch,cl,dx = 100,dl,dh,zeroF=0,signF=0,interruptF=0,carryF=0,B1=0,B2=0,B3=0,B4=0;
+int PC = 0,ax = 0,ah,al,bx = 0,bh,bl,cx = 0,ch,cl,dx = 0,dl,dh,zeroF=0,signF=0,interruptF=0,carryF=0,B1=0,B2=0,B3=0,B4=0;
 GtkWidget *AXdec,*BXdec,*CXdec,*DXdec;
+void excInstruccion(char* reg)
+{
+	int i = 0;
+	while(reg[i]!=0x20)
+	{
+		res[i]=reg[i];
+		i++;
+	}
+}
+void getRenglones(char* text)
+{
+	int i = 0,index = 0;
+	while(text[i]!='\0')
+	{
+		if(text[i]=='\n')
+		{
+			index = 0;
+			PC++;
+		}
+		else
+		{
+			prog[PC][index++]=text[i];
+		}
+		i++;
+	}
+	PC=0;
+}
+gchar *get_dialog_path_selection()
+{
+    GtkWidget *dialog;
+    int dlg_res = 0;
+    gchar *path;
 
+	dialog = gtk_file_chooser_dialog_new("Seleccione el archivo a cargar", NULL, GTK_FILE_CHOOSER_ACTION_OPEN, GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT, NULL);
+    dlg_res = gtk_dialog_run(GTK_DIALOG(dialog));
+
+    if( dlg_res == GTK_RESPONSE_ACCEPT )
+    {
+	   path = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
+    }
+    else
+    {
+    	printf("Path selection: Canceled.\n");
+    	path = NULL;
+    }
+
+    gtk_widget_destroy(dialog);
+    
+    return path;
+}
+
+char* abrirArchivo(GtkButton* button, gpointer func_data) 
+{ 
+	const char *filename = get_dialog_path_selection();;
+  	char *buffer = NULL;
+   	int tamano, lenRes;
+   	FILE *file = fopen(filename, "r");
+
+   	if (file)
+   	{
+       	fseek(file, 0, SEEK_END);//enceuntra ultimo byte del archivo
+       	tamano = ftell(file);//tamaño del inicio al fin
+       	rewind(file);//se pone al inicio del archivo				
+
+       	buffer = (char*) malloc(sizeof(char) * (tamano + 1) );//crea el char* donde estara
+       	lenRes = fread(buffer, sizeof(char), tamano, file);//lee todo
+       	buffer[tamano] = '\0';//para que sea el fin del string
+
+       	if (tamano != lenRes)//si son de distintos tamaños estamos mamando
+       	{
+           	free(buffer);
+           	buffer = NULL;
+       	}
+       fclose(file);
+    }
+    getRenglones(buffer);
+    return buffer;
+}
 int powW(int a,int b) 
 {
 	return b==0?1:a*powW(a,--b);

@@ -1,3 +1,11 @@
 ;Programa en ASM que hackea un banco.
 mov ax, 4Ch
 int 21h
+;Esto me hace guapo
+cmp ax, bx
+inc 21 ;hola
+jz 14
+add ax, 8
+mul ax
+;esto no lo lee xD
+out "hola"

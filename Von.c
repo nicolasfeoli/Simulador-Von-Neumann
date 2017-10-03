@@ -1,5 +1,6 @@
 #include "stdio.h"
 #include <gtk/gtk.h>
+#include <string.h>
 
 #define MUCHO 2000
 
@@ -10,24 +11,7 @@
       cc `pkg-config --cflags gtk+-3.0` Von.c -o Von `pkg-config --libs gtk+-3.0`
 */
 
-int abrirArchivo(const char *filename, char **result) 
-{ 
-  int tamano = 0;
-  FILE *f = fopen(filename, "rb");
-  if (f == NULL) 
-  {   //el archivo no abre
-    *result = NULL;
-    return -1;
-  } 
-  fseek(f, 0, SEEK_END);
-  tamano = ftell(f);
-  fseek(f, 0, SEEK_SET);
-  *result = (char *)malloc(tamano+1);
 
-  fclose(f);
-  (*result)[tamano] = 0;
-  return tamano;
-}
 
 static void ventanaSimulador()
 {
@@ -96,19 +80,20 @@ int main(int argc, char* argv[])
   button = gtk_button_new_with_label("abre ventana");
   botonArchivo = gtk_button_new_with_label("Carga Archivo");
 
-  char* bufferMemoria; //Hay que reservar esta memoria para que no la reserve dentro de la funcion. Se cambia despues.
-  abrirArchivo("programaASM.txt", &bufferMemoria);
+  char* bufferMemoria; 
+  gtk_widget_set_size_request(button,100,50);
+  gtk_widget_set_size_request(botonArchivo,100,50);
 
-  //g_signal_connect_swapped (botonArchivo, "clicked", G_CALLBACK (gtk_widget_destroy), window); // los parametros que estan despues del "clicked" son los parametros que recibe la funcion print hello que se puso en la primera linea
-  
-  gtk_widget_set_size_request(button,150,300);
+
   g_signal_connect(button,"clicked",G_CALLBACK(ventanaSimulador),window);
+  g_signal_connect(botonArchivo,"clicked",G_CALLBACK(abrirArchivo),NULL);
   gtk_container_set_border_width(GTK_CONTAINER(window),50);
 
   grid = gtk_grid_new();
   
   gtk_container_add(GTK_CONTAINER(window),grid);
   gtk_grid_attach(GTK_GRID(grid),button,0,0,1,1);
+  gtk_grid_attach(GTK_GRID(grid),botonArchivo,1,0,1,1);
   gtk_widget_show_all(window);//showea todo
   gtk_main();//start
 
