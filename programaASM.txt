@@ -9,3 +9,4 @@ add ax, 8
 mul ax
 ;esto no lo lee xD
 out "hola"
+cmp ax, 65534

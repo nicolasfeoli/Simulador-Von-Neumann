@@ -4,36 +4,98 @@
 
 char prog[256][500];
 
+short memoria[256] = {0};
+
+//FUENTE8  FUENTE16
+//DESTINO8 DESTINO16
+//INDEX
 
 char* IR = "mov ax, 5";
-int PC = 0,ax = 0,ah,al,bx = 0,bh,bl,cx = 0,ch,cl,dx = 0,dl,dh,zeroF=0,signF=0,interruptF=0,carryF=0,B1=0,B2=0,B3=0,B4=0;
+int PC = 0,
+	ah,al,ax = 0,
+	bh,bl,bx = 0,
+	ch,cl,cx = 0,
+	dl,dh,dx = 0,
+	zeroF=0,signF=0,
+	interruptF=0,carryF=0,
+	B1=0,B2=0,B3=0,B4=0;
+
 GtkWidget *AXdec,*BXdec,*CXdec,*DXdec;
-void excInstruccion(char* reg)
+void excInstruccion(char reg[])
 {
-	int i = 0;
-	while(reg[i]!=0x20)
+	char ins[5],par1[5],par2[5];
+	memset(&ins[0], 0, sizeof(ins));
+	memset(&par1[0], 0, sizeof(par1));
+	memset(&par2[0], 0, sizeof(par2));
+	int index, i, tipo = 1,instruccion,parametro1,parametro2,cuartoDato;
+	for(i = 0;i<(int)strlen(reg);i++)
 	{
-		res[i]=reg[i];
-		i++;
+		switch(tipo)
+		{
+			case 1:
+
+				if(reg[i]==0x20)
+				{
+					tipo++;
+					index = 0;
+				}
+				else
+				{
+					if(reg[i]!=0x20) ins[index++]=reg[i];
+				}
+				break;
+			case 2:
+				if(reg[i]==',') 
+				{
+					tipo++;
+					index = 0;
+				}
+				else
+				{
+					if(reg[i]!=0x20) par1[index++]=reg[i];
+				}
+				break;
+			case 3:
+				if(reg[i]!=0x20) par2[index++]=reg[i];
+				break;
+		}
 	}
+
+	if(!strcmp(ins,"cmp"))
+		printf("%s\n", "FUCK YEA");
+	/*printf("%s\n", reg);
+	putchar('\n');
+	printf("%s\n", "Instruccion:");
+	printf("%s\n", ins);
+	printf("%s\n", "Parametro 1:");
+	printf("%s\n", par1);
+	printf("%s\n", "Parametro 2:");
+	printf("%s\n", par2);*/
 }
 void getRenglones(char* text)
 {
-	int i = 0,index = 0;
+	int i = 0,index = 0,comment = 0;;
 	while(text[i]!='\0')
 	{
 		if(text[i]=='\n')
 		{
 			index = 0;
+			comment =0;
 			PC++;
+		}
+		else if(text[i]==';')
+		{
+			comment = 1;
+			if(!index) PC--;
 		}
 		else
 		{
-			prog[PC][index++]=text[i];
+			if(!comment) prog[PC][index++]=text[i];
 		}
 		i++;
 	}
 	PC=0;
+	excInstruccion(prog[8]);
 }
 gchar *get_dialog_path_selection()
 {
@@ -58,7 +120,6 @@ gchar *get_dialog_path_selection()
     
     return path;
 }
-
 char* abrirArchivo(GtkButton* button, gpointer func_data) 
 { 
 	const char *filename = get_dialog_path_selection();;
@@ -151,10 +212,10 @@ char* itoa(int num, char* str, int base)
 }
 void actualizarRT(int a,int b,int c, int d)
 {
-	ax=a%256;
-	bx=b%256;
-	cx=c%256;
-	dx=d%256;
+	ax=a%65535;
+	bx=b%65535;
+	cx=c%65535;
+	dx=d%65535;
 }
 void onBtoCnlClicked(GtkButton* button, gpointer func_data)
 {
@@ -368,4 +429,115 @@ static void ventanaALU()
 	gtk_window_set_title (GTK_WINDOW(window), "Unidad Aritmetologica");
   	gtk_window_set_resizable (GTK_WINDOW(window), FALSE);
   	gtk_widget_show_all(window);
+}
+/*
+MICROINSTRUCCIONES
+
+Microinstrucciones mínimas de la AFOC:
+X<-Y es la que permite mover datos del registro X al registro Y.
+ALU: op ejecuta la operación correspondiente de la ALU (add, sub, mul, div, and, or, xor, not, shl o shr).
+MEM: op ejecuta la operación de acceso a la memoria correspondiente (read o write)
+TEST: flag, N bifurca a la instrucción N del microprograma si la bandera flag está encendida.
+In abre una ventana y solicita un número que dejará almacenado en el MBR.
+Out En la ventana de salida despliega el contenido del MBR.
+*/
+
+//Microinstruccion de mover de un registro a otro
+void moverMicro(void)
+{
+	return;
+}
+
+
+//Micoinstruccion de mover a memoria
+
+
+/*
+ALU
+*/
+void mulAlu(void)
+{
+	B3 = B2 * B1;
+	B2 = B1 = B4 = 0;
+}
+
+void sumAlu(void)
+{
+	B3 = B2 + B1;
+	B2 = B1 = B4 = 0;
+}
+
+void restAlu(void)
+{
+	B3 = B2 + B1;
+	B2 = B1 = B4 = 0;
+}
+
+void divAlu(void)
+{
+	B3 = B1 / B2; // Hay que revisar que el orden este bien
+	B4 = B1 % B2;  // lo mismo
+}
+
+void andAlu(void)
+{
+	B3 = B1 & B2;
+	B2 = B1 = B4 = 0;
+}
+
+void orAlu(void)
+{
+	B3 = B1 | B2;
+	B2 = B1 = B4 = 0;
+}
+
+void xorAlu(void)
+{
+	B3 = B1 ^ B2;
+	B2 = B1 = B4 = 0;
+}
+
+void notAlu(void)
+{
+	B3 = !B1;
+	B2 = B1 = B4 = 0;
+}
+
+void shlAlu(void)
+{
+	B3 = B1 << B2;
+	B2 = B1 = B4 = 0;
+}
+
+void shrAlu(void)
+{
+	B3 = B1 >> B2;
+	B2 = B1 = B4 = 0;
+}
+
+
+//Esto no es lo que el profe explico 
+void mov(char registro, char altBjo, int num)
+{
+	int temp;
+	switch(registro)
+	{
+		case 'a': 
+			switch(altBjo)
+			{
+				case 'h':
+					ah = num;
+					temp = ax;
+					ax = ah;
+					ax = ax << 8; //
+					break;
+				case 'l':
+					al = num;
+					break;
+				case 'x':
+					ax = num;
+					break;
+			}
+			break;
+	}
 }
