@@ -20,14 +20,15 @@ int PC = 0,
 	interruptF=0,carryF=0,
 	B1=0,B2=0,B3=0,B4=0;
 
+
 GtkWidget *AXdec,*BXdec,*CXdec,*DXdec;
-void excInstruccion(char reg[])
+void excInstruccion(char reg[],int programCounter)
 {
 	char ins[5],par1[5],par2[5];
 	memset(&ins[0], 0, sizeof(ins));
 	memset(&par1[0], 0, sizeof(par1));
 	memset(&par2[0], 0, sizeof(par2));
-	int index, i, tipo = 1,instruccion,parametro1,parametro2,cuartoDato;
+	int index=0, i, tipo = 1, instruccion = 0 ,parametro1 = 0, parametro2 = 0, cuartoDato = 0;
 	for(i = 0;i<(int)strlen(reg);i++)
 	{
 		switch(tipo)
@@ -41,7 +42,7 @@ void excInstruccion(char reg[])
 				}
 				else
 				{
-					if(reg[i]!=0x20) ins[index++]=reg[i];
+					ins[index++]=reg[i];
 				}
 				break;
 			case 2:
@@ -60,17 +61,47 @@ void excInstruccion(char reg[])
 				break;
 		}
 	}
+	
+	if(!strcmp(ins,"mov"))
+	{
+		instruccion = 0;
+	}
+	else if(!strcmp(ins,"add"))
+	{
+		instruccion = 2;
+	}
+	else if(!strcmp(ins,"cmp"))
+	{
+		instruccion = 4;
+	}
+	else if(!strcmp(ins,"jz"))
+	{
+		instruccion = 6;
+	}
+	else if(!strcmp(ins,"jmp"))
+	{
+		instruccion = 7;
+	}
+	else if(!strcmp(ins,"out"))
+	{
+		instruccion = 8;
+	}
+	else if(!strcmp(ins,"in"))
+	{
+		instruccion = 9;
+	}
+	else if(!strcmp(ins,"sti"))
+	{
+		instruccion = 10;
+	}	
+	else if(!strcmp(ins,"cli"))
+	{
+		instruccion = 11;
+	}
+	else
+		printf("%s\n", "no existe :C");
 
-	if(!strcmp(ins,"cmp"))
-		printf("%s\n", "FUCK YEA");
-	/*printf("%s\n", reg);
-	putchar('\n');
-	printf("%s\n", "Instruccion:");
-	printf("%s\n", ins);
-	printf("%s\n", "Parametro 1:");
-	printf("%s\n", par1);
-	printf("%s\n", "Parametro 2:");
-	printf("%s\n", par2);*/
+	//switch()
 }
 void getRenglones(char* text)
 {
@@ -95,7 +126,8 @@ void getRenglones(char* text)
 		i++;
 	}
 	PC=0;
-	excInstruccion(prog[8]);
+	for(PC = 0;PC<9;PC++)
+		excInstruccion(prog[PC],PC);
 }
 gchar *get_dialog_path_selection()
 {

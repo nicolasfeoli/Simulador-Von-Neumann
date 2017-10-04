@@ -1,12 +1,12 @@
 ;Programa en ASM que hackea un banco.
 mov ax, 4Ch
-int 21h
+jmp 34
 ;Esto me hace guapo
 cmp ax, bx
-inc 21 ;hola
+cli ;hola
 jz 14
 add ax, 8
-mul ax
+in ax
 ;esto no lo lee xD
-out "hola"
-cmp ax, 65534
+out ax
+sti
