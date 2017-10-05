@@ -69,6 +69,14 @@ static void ventanaSimulador()
 }
 int main(int argc, char* argv[])
 {
+  for(i = 0; i < 256; i++)
+  {
+    memoria[i] = (celda*) malloc(sizeof(celda));
+    memoria[i]->codigoOp   = 0;
+    memoria[i]->operando1  = 0;
+    memoria[i]->operando2  = 0;
+    memoria[i]->cuartoDato = 0;
+  }
   gtk_init(&argc,&argv);//INICIA GTK
   GtkWidget* window,*button,*grid, *botonArchivo; //VARIABLES
 
