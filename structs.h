@@ -101,7 +101,66 @@ void excInstruccion(char reg[],int programCounter)
 	else
 		printf("%s\n", "no existe :C");
 
-	//switch()
+	if(par1[0]>=0x30 && par1[0]<=0x39)
+	{
+		cuartoDato = atoi(par1);
+		parametro1 = 15;
+		printf("%i\n", cuartoDato);
+		printf("%s\n", "cuarto dato ^");
+	}
+	else
+	{
+		switch(par1[0])
+		{
+			case 'a': 
+				switch(par1[1])
+				{
+					case 'x':
+						break;
+					case 'l':
+						printf("%s\n", "al");
+						break;
+					case 'h':
+						break;
+				}
+				break;
+			case 'b': 
+				switch(par1[1])
+				{
+					case 'x':
+						break;
+					case 'l':
+						break;
+					case 'h':
+						break;
+				}
+				break;
+			case 'c': 
+				switch(par1[1])
+				{
+					case 'x':
+						break;
+					case 'l':
+						break;
+					case 'h':
+						break;
+				}
+				break;
+			case 'd': 
+				switch(par1[1])
+				{
+					case 'x':
+						break;
+					case 'l':
+						break;
+					case 'h':
+						break;
+				}
+				break;
+			default:
+				printf("%s\n", "no tiene parametro 1");
+		}
+	}
 }
 void getRenglones(char* text)
 {
@@ -126,8 +185,8 @@ void getRenglones(char* text)
 		i++;
 	}
 	PC=0;
-	for(PC = 0;PC<9;PC++)
-		excInstruccion(prog[PC],PC);
+	//for(PC = 0;PC<9;PC++)
+		excInstruccion(prog[3],3);
 }
 gchar *get_dialog_path_selection()
 {

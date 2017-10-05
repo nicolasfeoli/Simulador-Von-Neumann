@@ -1,5 +1,5 @@
 ;Programa en ASM que hackea un banco.
-mov ax, 4Ch
+mov al, 4Ch
 jmp 34
 ;Esto me hace guapo
 cmp ax, bx
