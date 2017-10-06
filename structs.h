@@ -9,26 +9,28 @@ typedef struct {
 	int cuartoDato;
 } celda;
 
-char prog[256][500];
+static char prog[256][500];
 
 celda* memoria[256];
-
-int i;
-
 
 //FUENTE8  FUENTE16
 //DESTINO8 DESTINO16
 //INDEX
 
+int i;
+
 char* IR = "mov ax, 5";
-int PC = 0,
+static int PC = 0,
 	ah,al,ax = 0,
 	bh,bl,bx = 0,
 	ch,cl,cx = 0,
 	dl,dh,dx = 0,
 	zeroF=0,signF=0,
-	interruptF=0,carryF=0,
-	B1=0,B2=0,B3=0,B4=0;
+	interruptF=0,carryF=0;
+static int B1=0,B2=0,B3=0,B4=0;
+static int BD=0;
+static int MAR=0;
+static int MBR=0;
 
 
 GtkWidget *AXdec,*BXdec,*CXdec,*DXdec;
@@ -484,15 +486,6 @@ In abre una ventana y solicita un número que dejará almacenado en el MBR.
 Out En la ventana de salida despliega el contenido del MBR.
 */
 
-//Microinstruccion de mover de un registro a otro
-void moverMicro(void)
-{
-	return;
-}
-
-
-//Micoinstruccion de mover a memoria
-
 
 /*
 ALU
@@ -511,7 +504,7 @@ void sumAlu(void)
 
 void restAlu(void)
 {
-	B3 = B2 + B1;
+	B3 = B2 - B1;
 	B2 = B1 = B4 = 0;
 }
 
@@ -557,43 +550,1032 @@ void shrAlu(void)
 	B2 = B1 = B4 = 0;
 }
 
+void hola()
+{
+	MAR = 4;
+}
+
+void mov (int codigo1, int codigo2, int cuartoDato1)
+{
+	switch(codigo2){
+		case 0:
+			BD = ax; //BD<-ax
+			break;
+		case 1:
+			BD = bx;
+			break;
+		case 2:
+			BD = cx;
+			break;
+		case 3:
+			BD = dx;
+			break;
+		case 12:
+			BD  = cuartoDato1;
+			MAR = BD;
+			MBR = memoria[MAR]->cuartoDato;
+			BD  = MBR;
+			break;
+		case 13:
+			BD = bl;
+			MAR = BD;
+			MBR = memoria[MAR]->cuartoDato;
+			BD  = MBR;
+			break;
+		case 14:
+			BD = bh;
+			MAR = BD;
+			MBR = memoria[MAR]->cuartoDato;
+			BD  = MBR;
+			break;
+		case 15:
+			BD = cuartoDato1;
+			MAR = BD;
+			MBR = memoria[MAR]->cuartoDato;
+			BD  = MBR;
+	}
+	switch(codigo1){
+		case 0:
+			ax = BD;
+			break;
+		case 1:
+			bx = BD;
+			break;
+		case 2:
+			cx = BD;
+			break;
+		case 3:
+			dx = BD;
+			break;
+		case 12:
+			memoria[cuartoDato1]->cuartoDato = BD;
+			break;
+		case 13:
+			memoria[bl]->cuartoDato = BD;
+			break;
+		case 14:
+			memoria[bl]->cuartoDato = BD;
+			break;
+	}
+}
+
+void add(int codigo1, int codigo2, int cuartoDato1)
+{
+	switch(codigo2){
+		case 0:
+			BD = ax;
+			break;
+		case 1:
+			BD = bx;
+			break;
+		case 2:
+			BD = cx;
+			break;
+		case 3:
+			BD = dx;
+			break;
+		case 12:
+			BD  = cuartoDato1;
+			MAR = BD;
+			MBR = memoria[MAR]->cuartoDato;
+			BD  = MBR;
+			break;
+		case 13:
+			BD = bl;
+			MAR = BD;
+			MBR = memoria[MAR]->cuartoDato;
+			BD  = MBR;
+			break;
+		case 14:
+			BD = bh;
+			MAR = BD;
+			MBR = memoria[MAR]->cuartoDato;
+			BD  = MBR;
+			break;
+		case 15:
+			BD = cuartoDato1;
+			MAR = BD;
+			MBR = memoria[MAR]->cuartoDato;
+			BD  = MBR;
+	}
+	B1 = BD;
+	switch(codigo1){
+		case 0:
+			BD = ax; 
+			break;
+		case 1:
+			BD = bx;
+			break;
+		case 2:
+			BD = cx;
+			break;
+		case 3:
+			BD = dx;
+			break;
+		case 12:
+			BD  = cuartoDato1;
+			MAR = BD;
+			MBR = memoria[MAR]->cuartoDato;
+			BD  = MBR;
+			break;
+		case 13:
+			BD = bl;
+			MAR = BD;
+			MBR = memoria[MAR]->cuartoDato;
+			BD  = MBR;
+			break;
+		case 14:
+			BD = bh;
+			MAR = BD;
+			MBR = memoria[MAR]->cuartoDato;
+			BD  = MBR;
+			break;
+		case 15:
+			BD = cuartoDato1;
+			MAR = BD;
+			MBR = memoria[MAR]->cuartoDato;
+			BD  = MBR;
+	}
+	B2 = BD;
+	sumAlu();
+	BD = B3;
+	switch(codigo1){
+		case 0:
+			ax = BD;
+			break;
+		case 1:
+			bx = BD;
+			break;
+		case 2:
+			cx = BD;
+			break;
+		case 3:
+			dx = BD;
+			break;
+		case 12:
+			memoria[cuartoDato1]->cuartoDato = BD;
+			break;
+		case 13:
+			memoria[bl]->cuartoDato = BD;
+			break;
+		case 14:
+			memoria[bl]->cuartoDato = BD;
+			break;
+	}
+}
+
+void test(int flag, int salto)
+{
+	switch(flag)
+	{
+		case 0:
+			if(carryF)
+				PC = salto;
+			break;
+		case 1:
+			if(signF)
+				PC = salto;
+			break;
+		case 2:
+			if(zeroF)
+				PC = salto;
+			break;
+		case 3:
+			if(interruptF)
+				PC = salto;
+			break;
+	}
+}
+
+void in()
+{
+	printf("Microinstruccion in. Dato entrada: ");
+	scanf("%d", &MBR);
+}
+
+void out()
+{
+	printf("Microinstruccion out. Dato salida: %d\n", MBR);
+}
+
+//Esta Microinstruccion escribe en [MAR] lo que esta en MBR
+//  o lee de [MAR] y lo guarda en MBR
+void memoriaMicroInstruccion(int operacion)
+{
+	//Si operacion es 1 -> read
+	if(operacion)
+		MBR = memoria[MAR]->cuartoDato;
+	else
+		memoria[MAR]-> cuartoDato = MBR;
+}
+
+
 /*
-void mov(int codigo1, int codigo2)
+//Este mov es el de r/m -> r/m
+void mov(int codigo1, int codigo2, int cuartoDato)
 {
 	int temp;
 	switch(codigo1)
 	{
 		case 0:
 			// codigo ax
-
+			switch(codigo2)
+			{
+				case 0:
+					//mov ax, ax
+					// no hace nada?
+					ax = ax;
+					break;
+				case 1:
+					//mov ax, bx
+					ax = bx;
+					break;
+				case 2:
+					//mov ax, cx
+					ax = cx;
+					break;
+				case 3:
+					//mov ax, dx
+					ax = dx;
+					break;
+				//Se saltan los valores [4,11] pues se asume que nunca viene algo asi
+				case 12:
+					//mov ax,[dir]
+					BD  = cuartoDato;
+					MAR = BD;
+					MBR = memoria[MAR];
+					BD  = MBR;
+					ax  = BD;
+					break;
+				case 13:
+					//mov ax, [bl]
+					BD  = bl;
+					MAR = BD;
+					MBR = memoria[MAR];
+					BD  = MBR;
+					ax  = BD; 
+					break;
+				case 14:
+					//mov ax, [bh]
+					BD  = bh;
+					MAR = BD;
+					MBR = memoria[MAR];
+					BD  = MBR;
+					ax  = BD; 
+					break;
+			}
 			break;
 		case 1:
+			//codigo bx
+			switch(codigo2)
+			{
+				case 0:
+					//mov bx, ax
+					bx = ax;
+					break;
+				case 1:
+					//mov bx, bx
+					//no hace nada?
+					bx = bx;
+					break;
+				case 2:
+					//mov bx, cx
+					bx = cx;
+					break;
+				case 3:
+					//mov bx, dx
+					bx = dx;
+					break;
+				//Se saltan los valores [4,11] pues se asume que nunca viene algo asi
+				case 12:
+					//mov bx,[dir]
+					BD  = cuartoDato;
+					MAR = BD;
+					MBR = memoria[MAR];
+					BD  = MBR;
+					bx  = BD;
+					break;
+				case 13:
+					//mov bx, [bl]
+					BD  = bl;
+					MAR = BD;
+					MBR = memoria[MAR];
+					BD  = MBR;
+					bx  = BD; 
+					break;
+				case 14:
+					//mov bx, [bh]
+					BD  = bh;
+					MAR = BD;
+					MBR = memoria[MAR];
+					BD  = MBR;
+					bx  = BD; 
+					break;
 			break;
 		case 2:
+			//codigo cx
+			switch(codigo2)
+			{
+				case 0:
+					//mov cx, ax
+					cx = ax;
+					break;
+				case 1:
+					//mov cx, bx
+					cx = bx;
+					break;
+				case 2:
+					//mov cx, cx
+					//no hace nada?
+					cx = cx;
+					break;
+				case 3:
+					//mov cx, dx
+					cx = dx;
+					break;
+				//Se saltan los valores [4,11] pues se asume que nunca viene algo asi
+				case 12:
+					//mov cx,[dir]
+					BD  = cuartoDato;
+					MAR = BD;
+					MBR = memoria[MAR];
+					BD  = MBR;
+					cx  = BD;
+					break;
+				case 13:
+					//mov cx, [bl]
+					BD  = bl;
+					MAR = BD;
+					MBR = memoria[MAR];
+					BD  = MBR;
+					cx  = BD; 
+					break;
+				case 14:
+					//mov cx, [bh]
+					BD  = bh;
+					MAR = BD;
+					MBR = memoria[MAR];
+					BD  = MBR;
+					cx  = BD; 
+					break;
 			break;
 		case 3:
+			//codigo dx
+			switch(codigo2)
+			{
+				case 0:
+					//mov dx, ax
+					dx = ax;
+					break;
+				case 1:
+					//mov dx, bx
+					dx = bx;
+					break;
+				case 2:
+					//mov dx, cx
+					dx = cx;
+					break;
+				case 3:
+					//mov dx, dx
+					//no hace nada?
+					dx = dx;
+					break;
+				//Se saltan los valores [4,11] pues se asume que nunca viene algo asi
+				case 12:
+					//mov dx,[dir]
+					BD  = cuartoDato;
+					MAR = BD;
+					MBR = memoria[MAR];
+					BD  = MBR;
+					dx  = BD;
+					break;
+				case 13:
+					//mov dx, [bl]
+					BD  = bl;
+					MAR = BD;
+					MBR = memoria[MAR];
+					BD  = MBR;
+					dx  = BD; 
+					break;
+				case 14:
+					//mov dx, [bh]
+					BD  = bh;
+					MAR = BD;
+					MBR = memoria[MAR];
+					BD  = MBR;
+					dx  = BD; 
+					break;
 			break;
 		case 4:
+			//codigo al
+			switch(codigo2)
+			{
+				//Se saltan los valores [0,3] pues se asume que nunca viene algo asi
+				case 4:
+					//mov al, al
+					//no hace nada?
+					al = al;
+					break;
+				case 5:
+					//mov al, bl
+					al = bl;
+					break;
+				case 6:
+					//mov al, cl
+					al = cl;
+					break;
+				case 7:
+					//mov al, dl
+					al = dl;
+					break;
+				case 8:
+					//mov al, ah
+					al = ah;
+					break;
+				case 9:
+					//mov al, bh
+					al = bh;
+					break;
+				case 10:
+					//mov al, ch
+					al = ch;
+					break;
+				case 11:
+					//mov al, dh
+					al = dh;
+					break;
+				case 12:
+					//mov al,[dir]
+					BD  = cuartoDato;
+					MAR = BD;
+					MBR = memoria[MAR];
+					BD  = MBR;
+					al  = BD;
+					break;
+				case 13:
+					//mov al, [bl]
+					BD  = bl;
+					MAR = BD;
+					MBR = memoria[MAR];
+					BD  = MBR;
+					al  = BD; 
+					break;
+				case 14:
+					//mov al, [bh]
+					BD  = bh;
+					MAR = BD;
+					MBR = memoria[MAR];
+					BD  = MBR;
+					al  = BD; 
+					break;
 			break;
 		case 5:
+			//codigo bl
+			switch(codigo2)
+			{
+				//Se saltan los valores [0,3] pues se asume que nunca viene algo asi
+				case 4:
+					//mov bl, al
+					bl = al;
+					break;
+				case 5:
+					//mov bl, bl
+					//no hace nada?
+					bl = bl;
+					break;
+				case 6:
+					//mov bl, cl
+					bl = cl;
+					break;
+				case 7:
+					//mov bl, dl
+					bl = dl;
+					break;
+				case 8:
+					//mov bl, ah
+					bl = ah;
+					break;
+				case 9:
+					//mov bl, bh
+					bl = bh;
+					break;
+				case 10:
+					//mov bl, ch
+					bl = ch;
+					break;
+				case 11:
+					//mov bl, dh
+					bl = dh;
+					break;
+				case 12:
+					//mov bl,[dir]
+					BD  = cuartoDato;
+					MAR = BD;
+					MBR = memoria[MAR];
+					BD  = MBR;
+					bl  = BD;
+					break;
+				case 13:
+					//mov bl, [bl]
+					BD  = bl;
+					MAR = BD;
+					MBR = memoria[MAR];
+					BD  = MBR;
+					bl  = BD; 
+					break;
+				case 14:
+					//mov bl, [bh]
+					BD  = bh;
+					MAR = BD;
+					MBR = memoria[MAR];
+					BD  = MBR;
+					bl  = BD; 
+					break;
 			break;
 		case 6:
+			//codigo cl
+			switch(codigo2)
+			{
+				//Se saltan los valores [0,3] pues se asume que nunca viene algo asi
+				case 4:
+					//mov cl, al
+					cl = al;
+					break;
+				case 5:
+					//mov cl, bl
+					cl = bl;
+					break;
+				case 6:
+					//mov cl, cl
+					//no hace nada?
+					cl = cl;
+					break;
+				case 7:
+					//mov cl, dl
+					cl = dl;
+					break;
+				case 8:
+					//mov cl, ah
+					cl = ah;
+					break;
+				case 9:
+					//mov cl, bh
+					cl = bh;
+					break;
+				case 10:
+					//mov cl, ch
+					cl = ch;
+					break;
+				case 11:
+					//mov cl, dh
+					cl = dh;
+					break;
+				case 12:
+					//mov cl,[dir]
+					BD  = cuartoDato;
+					MAR = BD;
+					MBR = memoria[MAR];
+					BD  = MBR;
+					cl  = BD;
+					break;
+				case 13:
+					//mov cl, [bl]
+					BD  = bl;
+					MAR = BD;
+					MBR = memoria[MAR];
+					BD  = MBR;
+					cl  = BD; 
+					break;
+				case 14:
+					//mov cl, [bh]
+					BD  = bh;
+					MAR = BD;
+					MBR = memoria[MAR];
+					BD  = MBR;
+					cl  = BD; 
+					break;
 			break;
 		case 7:
+			//codigo dl
+			switch(codigo2)
+			{
+				//Se saltan los valores [0,3] pues se asume que nunca viene algo asi
+				case 4:
+					//mov dl, al
+					dl = al;
+					break;
+				case 5:
+					//mov dl, bl
+					dl = bl;
+					break;
+				case 6:
+					//mov dl, cl
+					dl = cl;
+					break;
+				case 7:
+					//mov dl, dl
+					//no hace nada?
+					dl = dl;
+					break;
+				case 8:
+					//mov dl, ah
+					dl = ah;
+					break;
+				case 9:
+					//mov dl, bh
+					dl = bh;
+					break;
+				case 10:
+					//mov dl, ch
+					dl = ch;
+					break;
+				case 11:
+					//mov dl, dh
+					dl = dh;
+					break;
+				case 12:
+					//mov dl,[dir]
+					BD  = cuartoDato;
+					MAR = BD;
+					MBR = memoria[MAR];
+					BD  = MBR;
+					dl  = BD;
+					break;
+				case 13:
+					//mov dl, [bl]
+					BD  = bl;
+					MAR = BD;
+					MBR = memoria[MAR];
+					BD  = MBR;
+					dl  = BD; 
+					break;
+				case 14:
+					//mov dl, [bh]
+					BD  = bh;
+					MAR = BD;
+					MBR = memoria[MAR];
+					BD  = MBR;
+					dl  = BD; 
+					break;
 			break;
 		case 8:
+			//codigo ah
+			switch(codigo2)
+			{
+				//Se saltan los valores [0,3] pues se asume que nunca viene algo asi
+				case 4:
+					//mov ah, al
+					ah = al;
+					break;
+				case 5:
+					//mov ah, bl
+					ah = bl;
+					break;
+				case 6:
+					//mov ah, cl
+					ah = cl;
+					break;
+				case 7:
+					//mov ah, dl
+					ah = dl;
+					break;
+				case 8:
+					//mov ah, ah
+					//no hace nada?
+					ah = ah;
+					break;
+				case 9:
+					//mov ah, bh
+					ah = bh;
+					break;
+				case 10:
+					//mov ah, ch
+					ah = ch;
+					break;
+				case 11:
+					//mov ah, dh
+					ah = dh;
+					break;
+				case 12:
+					//mov ah,[dir]
+					BD  = cuartoDato;
+					MAR = BD;
+					MBR = memoria[MAR];
+					BD  = MBR;
+					ah  = BD;
+					break;
+				case 13:
+					//mov ah, [bl]
+					BD  = bl;
+					MAR = BD;
+					MBR = memoria[MAR];
+					BD  = MBR;
+					ah  = BD; 
+					break;
+				case 14:
+					//mov ah, [bh]
+					BD  = bh;
+					MAR = BD;
+					MBR = memoria[MAR];
+					BD  = MBR;
+					ah  = BD; 
+					break;
 			break;
 		case 9:
+			//codigo bh
+			switch(codigo2)
+			{
+				//Se saltan los valores [0,3] pues se asume que nunca viene algo asi
+				case 4:
+					//mov bh, al
+					bh = al;
+					break;
+				case 5:
+					//mov bh, bl
+					//no hace nada?
+					bh = bl;
+					break;
+				case 6:
+					//mov bh, cl
+					bh = cl;
+					break;
+				case 7:
+					//mov bh, dl
+					bh = dl;
+					break;
+				case 8:
+					//mov bh, ah
+					bh = ah;
+					break;
+				case 9:
+					//mov bh, bh
+					bh = bh;
+					break;
+				case 10:
+					//mov bh, ch
+					bh = ch;
+					break;
+				case 11:
+					//mov bh, dh
+					bh = dh;
+					break;
+				case 12:
+					//mov bh,[dir]
+					BD  = cuartoDato;
+					MAR = BD;
+					MBR = memoria[MAR];
+					BD  = MBR;
+					bh  = BD;
+					break;
+				case 13:
+					//mov bh, [bl]
+					BD  = bl;
+					MAR = BD;
+					MBR = memoria[MAR];
+					BD  = MBR;
+					bh  = BD; 
+					break;
+				case 14:
+					//mov bh, [bh]
+					BD  = bh;
+					MAR = BD;
+					MBR = memoria[MAR];
+					BD  = MBR;
+					bh  = BD; 
+					break;
 			break;
 		case 10:
+			//codigo ch
+			switch(codigo2)
+			{
+				//Se saltan los valores [0,3] pues se asume que nunca viene algo asi
+				case 4:
+					//mov bl, al
+					bl = al;
+					break;
+				case 5:
+					//mov bl, bl
+					//no hace nada?
+					bl = bl;
+					break;
+				case 6:
+					//mov bl, cl
+					bl = cl;
+					break;
+				case 7:
+					//mov bl, dl
+					bl = dl;
+					break;
+				case 8:
+					//mov bl, ah
+					bl = ah;
+					break;
+				case 9:
+					//mov bl, bh
+					bl = bh;
+					break;
+				case 10:
+					//mov bl, ch
+					bl = ch;
+					break;
+				case 11:
+					//mov bl, dh
+					bl = dh;
+					break;
+				case 12:
+					//mov bl,[dir]
+					BD  = cuartoDato;
+					MAR = BD;
+					MBR = memoria[MAR];
+					BD  = MBR;
+					bl  = BD;
+					break;
+				case 13:
+					//mov bl, [bl]
+					BD  = bl;
+					MAR = BD;
+					MBR = memoria[MAR];
+					BD  = MBR;
+					bl  = BD; 
+					break;
+				case 14:
+					//mov bl, [bh]
+					BD  = bh;
+					MAR = BD;
+					MBR = memoria[MAR];
+					BD  = MBR;
+					bl  = BD; 
+					break;
 			break;
 		case 11:
+			//codigo dh
+			switch(codigo2)
+			{
+				case 0:
+					break;
+				case 1:
+					break;
+				case 2:
+					break;
+				case 3:
+					break;
+				case 4:
+					break;
+				case 5:
+					break;
+				case 6:
+					break;
+				case 7:
+					break;
+				case 8:
+					break;
+				case 9:
+					break;
+				case 10:
+					break;
+				case 11:
+					break;
+				case 12:
+					break;
+				case 13:
+					break;
+				case 14:
+					break;
 			break;
 		case 12:
+			switch(codigo2)
+			{
+				case 0:
+					break;
+				case 1:
+					break;
+				case 2:
+					break;
+				case 3:
+					break;
+				case 4:
+					break;
+				case 5:
+					break;
+				case 6:
+					break;
+				case 7:
+					break;
+				case 8:
+					break;
+				case 9:
+					break;
+				case 10:
+					break;
+				case 11:
+					break;
+				case 12:
+					break;
+				case 13:
+					break;
+				case 14:
+					break;
 			break;
 		case 13:
+			switch(codigo2)
+			{
+				case 0:
+					break;
+				case 1:
+					break;
+				case 2:
+					break;
+				case 3:
+					break;
+				case 4:
+					break;
+				case 5:
+					break;
+				case 6:
+					break;
+				case 7:
+					break;
+				case 8:
+					break;
+				case 9:
+					break;
+				case 10:
+					break;
+				case 11:
+					break;
+				case 12:
+					break;
+				case 13:
+					break;
+				case 14:
+					break;
 			break;
 		case 14:
+			switch(codigo2)
+			{
+				case 0:
+					break;
+				case 1:
+					break;
+				case 2:
+					break;
+				case 3:
+					break;
+				case 4:
+					break;
+				case 5:
+					break;
+				case 6:
+					break;
+				case 7:
+					break;
+				case 8:
+					break;
+				case 9:
+					break;
+				case 10:
+					break;
+				case 11:
+					break;
+				case 12:
+					break;
+				case 13:
+					break;
+				case 14:
+					break;
 			break;
-
-}*/
+}
+*/
+/*
+case 4:
+					//Tirar error
+					// diferentes tamaños
+					break;
+				case 5:
+					//Tirar error
+					// diferentes tamaños
+					break;
+				case 6:
+					//Tirar error
+					// diferentes tamaños
+					break;
+				case 7:
+					//Tirar error
+					// diferentes tamaños
+					break;
+				case 8:
+					//Tirar error
+					// diferentes tamaños
+					break;
+				case 9:
+					//Tirar error
+					// diferentes tamaños
+					break;
+				case 10:
+					//Tirar error
+					// diferentes tamaños
+					break;
+				case 11:
+					//Tirar error
+					// diferentes tamaños
+					break;*/
