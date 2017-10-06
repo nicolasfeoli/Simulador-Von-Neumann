@@ -2,6 +2,16 @@
 #include "stdlib.h"
 #include <string.h>
 
+##ifndef LECTURA
+#define LECTURA 1
+#endif
+
+##ifndef ESCRITURA
+#define ESCRITURA 0
+#endif
+
+void MEM(int);
+
 typedef struct {
 	int codigoOp;
 	int operando1;
@@ -21,14 +31,15 @@ int i;
 
 char* IR = "mov ax, 5";
 static int PC = 0,
-	ah,al,ax = 0,
-	bh,bl,bx = 0,
-	ch,cl,cx = 0,
-	dl,dh,dx = 0,
-	zeroF=0,signF=0,
-	interruptF=0,carryF=0;
-static int B1=0,B2=0,B3=0,B4=0;
-static int BD=0;
+	ah,al,ax  = 0,
+	bh,bl,bx  = 0,
+	ch,cl,cx  = 0,
+	dl,dh,dx  = 0,
+	zeroF      = 0, signF  = 0,
+	interruptF = 0, carryF = 0;
+
+static int B1 =0,B2=0,B3=0,B4=0;
+static int BD =0;
 static int MAR=0;
 static int MBR=0;
 
@@ -761,6 +772,8 @@ ALU
 void mulAlu(void)
 {
 	B3 = B2 * B1;
+	if(!B3) zeroF = 1;
+	if(B3 > 65535){B3 = B3%65535; carryF;}
 	B2 = B1 = B4 = 0;
 }
 
@@ -841,26 +854,29 @@ void mov (int codigo1, int codigo2, int cuartoDato1)
 		case 12:
 			BD  = cuartoDato1;
 			MAR = BD;
-			MBR = memoria[MAR]->cuartoDato;
+			MEM(LECTURA);
+			//MBR = memoria[MAR]->cuartoDato;
 			BD  = MBR;
 			break;
 		case 13:
-			BD = bl;
+			BD  = bl;
 			MAR = BD;
-			MBR = memoria[MAR]->cuartoDato;
+			MEM(LECTURA);
+			//MBR = memoria[MAR]->cuartoDato;
 			BD  = MBR;
 			break;
 		case 14:
-			BD = bh;
+			BD  = bh;
 			MAR = BD;
-			MBR = memoria[MAR]->cuartoDato;
+			MEM(LECTURA);
+			//MBR = memoria[MAR]->cuartoDato;
 			BD  = MBR;
 			break;
 		case 15:
-			BD = cuartoDato1;
+			BD  = PC;
 			MAR = BD;
-			MBR = memoria[MAR]->cuartoDato;
-			BD  = MBR;
+			MEM(LECTURA);
+			BD  = cuartoDato1;
 	}
 	switch(codigo1){
 		case 0:
@@ -876,13 +892,25 @@ void mov (int codigo1, int codigo2, int cuartoDato1)
 			dx = BD;
 			break;
 		case 12:
-			memoria[cuartoDato1]->cuartoDato = BD;
+			MBR = BD;
+			BD  = PC;
+			MAR = BD;
+			MEM(ESCRITURA);
+			//memoria[cuartoDato1]->cuartoDato = BD;
 			break;
 		case 13:
-			memoria[bl]->cuartoDato = BD;
+			MBR = BD;
+			BD  = bl;
+			MAR = BD;
+			MEM(ESCRITURA);
+			//memoria[bl]->cuartoDato = BD;
 			break;
 		case 14:
-			memoria[bl]->cuartoDato = BD;
+			MBR = BD;
+			BD  = bh;
+			MAR = BD;
+			MEM(ESCRITURA);
+			//memoria[bh]->cuartoDato = BD;
 			break;
 	}
 }
@@ -905,25 +933,29 @@ void add(int codigo1, int codigo2, int cuartoDato1)
 		case 12:
 			BD  = cuartoDato1;
 			MAR = BD;
-			MBR = memoria[MAR]->cuartoDato;
+			MEM(LECTURA);
+			//MBR = memoria[MAR]->cuartoDato;
 			BD  = MBR;
 			break;
 		case 13:
-			BD = bl;
+			BD  = bl;
 			MAR = BD;
-			MBR = memoria[MAR]->cuartoDato;
+			MEM(LECTURA);
+			//MBR = memoria[MAR]->cuartoDato;
 			BD  = MBR;
 			break;
 		case 14:
-			BD = bh;
+			BD  = bh;
 			MAR = BD;
-			MBR = memoria[MAR]->cuartoDato;
+			MEM(LECTURA);
+			//MBR = memoria[MAR]->cuartoDato;
 			BD  = MBR;
 			break;
 		case 15:
-			BD = cuartoDato1;
+			BD  = cuartoDato1;
 			MAR = BD;
-			MBR = memoria[MAR]->cuartoDato;
+			MEM(LECTURA);
+			//MBR = memoria[MAR]->cuartoDato;
 			BD  = MBR;
 	}
 	B1 = BD;
@@ -943,25 +975,29 @@ void add(int codigo1, int codigo2, int cuartoDato1)
 		case 12:
 			BD  = cuartoDato1;
 			MAR = BD;
-			MBR = memoria[MAR]->cuartoDato;
+			MEM(LECTURA);
+			//MBR = memoria[MAR]->cuartoDato;
 			BD  = MBR;
 			break;
 		case 13:
-			BD = bl;
+			BD  = bl;
 			MAR = BD;
-			MBR = memoria[MAR]->cuartoDato;
+			MEM(LECTURA);
+			//MBR = memoria[MAR]->cuartoDato;
 			BD  = MBR;
 			break;
 		case 14:
-			BD = bh;
+			BD  = bh;
 			MAR = BD;
-			MBR = memoria[MAR]->cuartoDato;
+			MEM(LECTURA);
+			//MBR = memoria[MAR]->cuartoDato;
 			BD  = MBR;
 			break;
 		case 15:
-			BD = cuartoDato1;
+			BD  = cuartoDato1;
 			MAR = BD;
-			MBR = memoria[MAR]->cuartoDato;
+			MEM(LECTURA);
+			//MBR = memoria[MAR]->cuartoDato;
 			BD  = MBR;
 	}
 	B2 = BD;
@@ -981,13 +1017,25 @@ void add(int codigo1, int codigo2, int cuartoDato1)
 			dx = BD;
 			break;
 		case 12:
-			memoria[cuartoDato1]->cuartoDato = BD;
+			MBR = BD;
+			BD  = cuartoDato1;
+			MAR = BD;
+			MEM(ESCRITURA);
+			//memoria[cuartoDato1]->cuartoDato = BD;
 			break;
 		case 13:
-			memoria[bl]->cuartoDato = BD;
+			MBR = BD;
+			BD  = bl;
+			MAR = BD;
+			MEM(ESCRITURA);
+			//memoria[bl]->cuartoDato = BD;
 			break;
 		case 14:
-			memoria[bl]->cuartoDato = BD;
+			MBR = BD;
+			BD  = bh;
+			MAR = BD;
+			MEM(ESCRITURA);
+			//memoria[bl]->cuartoDato = BD;
 			break;
 	}
 }
@@ -1028,7 +1076,7 @@ void out()
 
 //Esta Microinstruccion escribe en [MAR] lo que esta en MBR
 //  o lee de [MAR] y lo guarda en MBR
-void memoriaMicroInstruccion(int operacion)
+void MEM(int operacion)
 {
 	//Si operacion es 1 -> read
 	if(operacion)
@@ -1037,6 +1085,15 @@ void memoriaMicroInstruccion(int operacion)
 		memoria[MAR]-> cuartoDato = MBR;
 }
 
+void cli()
+{
+	interruptF = 0;
+}
+
+void sti()
+{
+	interruptF = 1;
+}
 
 /*
 //Este mov es el de r/m -> r/m
