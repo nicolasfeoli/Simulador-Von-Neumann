@@ -36,7 +36,7 @@ static int MBR=0;
 GtkWidget *AXdec,*BXdec,*CXdec,*DXdec;
 void excInstruccion(char reg[],int programCounter)
 {
-	char ins[5],par1[5],par2[5];
+	char ins[5],par1[5],par2[5],tmp[3];
 	memset(&ins[0], 0, sizeof(ins));
 	memset(&par1[0], 0, sizeof(par1));
 	memset(&par2[0], 0, sizeof(par2));
@@ -73,47 +73,315 @@ void excInstruccion(char reg[],int programCounter)
 				break;
 		}
 	}
-	
-	if(!strcmp(ins,"mov"))
-	{
-		instruccion = 0;
+	if(1){//instrucciones
+		if(!strcmp(ins,"mov"))
+		{
+			instruccion = 0;
+		}
+		else if(!strcmp(ins,"add"))
+		{
+			instruccion = 2;
+		}
+		else if(!strcmp(ins,"cmp"))
+		{
+			instruccion = 4;
+		}
+		else if(!strcmp(ins,"jz"))
+		{
+			instruccion = 6;
+		}
+		else if(!strcmp(ins,"jmp"))
+		{
+			instruccion = 7;
+		}
+		else if(!strcmp(ins,"out"))
+		{
+			instruccion = 8;
+		}
+		else if(!strcmp(ins,"in"))
+		{
+			instruccion = 9;
+		}
+		else if(!strcmp(ins,"sti"))
+		{
+			instruccion = 10;
+		}	
+		else if(!strcmp(ins,"cli"))
+		{
+			instruccion = 11;
+		}
+		else{
+			printf("%s\n", "#ERROR");
+			printf("%i\n", programCounter); 
+		}
 	}
-	else if(!strcmp(ins,"add"))
+	if(1)   // parametro 1
 	{
-		instruccion = 2;
+		if(par1[0]>=0x30 && par1[0]<=0x39 )
+		{
+			if(instruccion == 7 || instruccion == 6){
+				cuartoDato = atoi(par1);
+				parametro1 = 15;
+			}
+			else
+			{
+				printf("%s\n", "#ERROR");
+				printf("%i\n", programCounter); 
+			}
+		}
+		else
+		{
+			switch(par1[0])
+			{
+				case 'a': 
+					switch(par1[1])
+					{
+						case 'x':
+							parametro1 = 0;
+							break;
+						case 'l':
+							parametro1 = 4;
+							break;
+						case 'h':
+							parametro1 = 8;
+							break;
+					}
+					break;
+				case 'b': 
+					switch(par1[1])
+					{
+						case 'x':
+							parametro1 = 1;
+							break;
+						case 'l':
+							parametro1 = 5;
+							break;
+						case 'h':
+							parametro1 = 9;
+							break;
+					}
+					break;
+				case 'c': 
+					switch(par1[1])
+					{
+						case 'x':
+							parametro1 = 2;
+							break;
+						case 'l':
+							parametro1 = 6;
+							break;
+						case 'h':
+							parametro1 = 10;
+							break;
+					}
+					break;
+				case 'd': 
+					switch(par1[1])
+					{
+						case 'x':
+							parametro1 = 3;
+							break;
+						case 'l':
+							parametro1 = 7;
+							break;
+						case 'h':
+							parametro1 = 11;
+							break;
+					}
+					break;
+				case '[':
+					switch(par1[1])
+					{
+						case 'b':
+							switch(par1[2])
+							{
+								case 'h':
+									if(par1[3]==']')
+										parametro1 = 14;
+									else{
+										printf("%s\n","#ERROR" );
+										printf("%i\n", programCounter); 
+									}
+									break;
+								case 'l':
+									if(par1[3]==']')
+										parametro1 = 13;
+									else{
+										printf("%s\n","#ERROR" );
+										printf("%i\n", programCounter); 
+									}
+									break;
+								default:
+									printf("%s\n","#ERROR" );
+									printf("%i\n", programCounter); 
+							}
+							break;
+						default: 
+							if(par1[1]>=0x30 && par1[1]<=0x39)
+							{
+								memset(&tmp[0], 0, sizeof(tmp));
+								tmp[0]=par1[1];
+								tmp[1]=par1[2];
+								tmp[2]=par1[3];
+								cuartoDato = atoi(tmp);
+								parametro1 = 12;
+							}
+							else{
+								printf("%s\n","#ERROR" );
+								printf("%i\n", programCounter); 
+							}
+					}
+					break;
+				default:
+					if(instruccion == 11 || instruccion == 10){
+						printf("%s\n", "no tiene parametro 1");
+						printf("%i\n", programCounter); 
+					}
+					else{
+						printf("%s\n", "#ERROR");
+						printf("%i\n", programCounter); 
+					}
+			}
+		}
 	}
-	else if(!strcmp(ins,"cmp"))
+	if(1)//parametro 2
 	{
-		instruccion = 4;
+		if(par2[0]>=0x30 && par2[0]<=0x39 )
+		{
+			if(instruccion >= 0 && instruccion <= 5){
+				cuartoDato = atoi(par2);
+				parametro2 = 15;
+			}
+			else
+			{
+				printf("%s\n", "#ERROR");
+				printf("%i\n", programCounter); 
+			}
+		}
+		else
+		{
+			switch(par2[0])
+			{
+				case 'a': 
+					switch(par2[1])
+					{
+						case 'x':
+							parametro2 = 0;
+							break;
+						case 'l':
+							parametro2 = 4;
+							break;
+						case 'h':
+							parametro2 = 8;
+							break;
+					}
+					break;
+				case 'b': 
+					switch(par2[1])
+					{
+						case 'x':
+							parametro2 = 1;
+							break;
+						case 'l':
+							parametro2 = 5;
+							break;
+						case 'h':
+							parametro2 = 9;
+							break;
+					}
+					break;
+				case 'c': 
+					switch(par2[1])
+					{
+						case 'x':
+							parametro2 = 2;
+							break;
+						case 'l':
+							parametro2 = 6;
+							break;
+						case 'h':
+							parametro2 = 10;
+							break;
+					}
+					break;
+				case 'd': 
+					switch(par2[1])
+					{
+						case 'x':
+							parametro2 = 3;
+							break;
+						case 'l':
+							parametro2 = 7;
+							break;
+						case 'h':
+							parametro2 = 11;
+							break;
+					}
+					break;
+				case '[':
+					switch(par2[1])
+					{
+						case 'b':
+							switch(par2[2])
+							{
+								case 'h':
+									if(par2[3]==']')
+										parametro2 = 14;
+									else{
+										printf("%s\n","#ERROR" );
+										printf("%i\n", programCounter); 
+									}
+									break;
+								case 'l':
+									if(par2[3]==']')
+										parametro2 = 13;
+									else{
+										printf("%s\n","#ERROR" );
+										printf("%i\n", programCounter); 
+									}
+									break;
+								default:
+									printf("%s\n","#ERROR" );
+									printf("%i\n", programCounter); 
+							}
+							break;
+						default: 
+							if(par2[1]>=0x30 && par2[1]<=0x39)
+							{
+								memset(&tmp[0], 0, sizeof(tmp));
+								tmp[0]=par2[1];
+								tmp[1]=par2[2];
+								tmp[2]=par2[3];
+								cuartoDato = atoi(tmp);
+								parametro2 = 12;
+							}
+							else{
+								printf("%s\n","#ERROR" );
+								printf("%i\n", programCounter); 
+							}
+					}
+					break;
+				default:
+					if(instruccion >= 6 || instruccion <= 11){
+						printf("%s\n", "no tiene parametro 2");
+						printf("%i\n", programCounter); 
+					}
+					else{
+						printf("%s\n", "#ERROR");
+						printf("%i\n", programCounter); 
+					}
+			}
+		}	
 	}
-	else if(!strcmp(ins,"jz"))
-	{
-		instruccion = 6;
-	}
-	else if(!strcmp(ins,"jmp"))
-	{
-		instruccion = 7;
-	}
-	else if(!strcmp(ins,"out"))
-	{
-		instruccion = 8;
-	}
-	else if(!strcmp(ins,"in"))
-	{
-		instruccion = 9;
-	}
-	else if(!strcmp(ins,"sti"))
-	{
-		instruccion = 10;
-	}	
-	else if(!strcmp(ins,"cli"))
-	{
-		instruccion = 11;
-	}
-	else
-		printf("%s\n", "no existe :C");
 
-	//switch()
+	if((parametro1>=12 && parametro1<=14 && parametro2>=12 && parametro2<=14 )||(parametro1>=4 && parametro1<=11 && parametro2>=0 && parametro2<=3)||(parametro2>=4 && parametro2<=11 && parametro1>=0 && parametro1<=3))
+	{
+		printf("%s\n", "#ERROR");
+		printf("%i\n", programCounter); 
+	}
+	else{
+		printf("%s\n", "todo salio perfect"); 
+	}
 }
 void getRenglones(char* text)
 {
@@ -138,7 +406,7 @@ void getRenglones(char* text)
 		i++;
 	}
 	PC=0;
-	for(PC = 0;PC<9;PC++)
+	for(PC = 0;PC<24;PC++)
 		excInstruccion(prog[PC],PC);
 }
 gchar *get_dialog_path_selection()

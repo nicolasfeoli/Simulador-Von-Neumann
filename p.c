@@ -3,9 +3,9 @@
 #include <string.h>
 int main()
 {
-	char hola[19] = "hola que hace";
-	char a[14] = "hola que hace ";
+	char hola[5];
+	memset(&hola[0], 0, sizeof(hola));
 
-	strcmp(a,"hola que hace")==0?printf("%s\n","iguales"):printf("%s\n", "diferentes");
+	hola[0]==0?printf("%s\n","es 0" ):printf("%s\n","no es 0" );
 	return 0;
 }
