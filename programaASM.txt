@@ -1,12 +1,24 @@
-;Programa en ASM que hackea un banco.
-mov al, 4Ch
-jmp 34
-;Esto me hace guapo
+mov ax, 5
+mov ax, bx
+mov ax, [bh]
+mov [bl], ax
+mov [7], ax
+mov ax, [7]
+cmp ax, 5
 cmp ax, bx
-cli ;hola
-jz 14
-add ax, 8
-in ax
-;esto no lo lee xD
+cmp ax, [bh]
+cmp [bl], ax
+cmp [7], ax
+cmp ax, [7]
+add ax, 5
+add ax, bx
+add ax, [bh]
+add [bl], ax
+add [7], ax
+add ax, [7]
 out ax
+in ax
+jmp 17
+jz 17
+cli
 sti
