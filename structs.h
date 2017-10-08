@@ -418,7 +418,7 @@ void getRenglones(char* text)
 	}
 	PC=0;
 	for(PC = 0;PC<24;PC++)
-		excInstruccion(prog[PC],PC);
+		excInstruccion(prog[PC],PC); 
 }
 gchar *get_dialog_path_selection()
 {
@@ -540,6 +540,7 @@ void actualizarRT(int a,int b,int c, int d)
 	cx=c%65535;
 	dx=d%65535;
 }
+
 void onBtoCnlClicked(GtkButton* button, gpointer func_data)
 {
 	gtk_widget_destroy (GTK_WIDGET(func_data));
@@ -773,7 +774,7 @@ void mulAlu(void)
 {
 	B3 = B2 * B1;
 	if(!B3) zeroF = 1;
-	if(B3 > 65535){B3 = B3%65535; carryF;}
+	if(B3 > 65535){B3 = B3%65535; carryF=1;}
 	B2 = B1 = B4 = 0;
 }
 
@@ -785,7 +786,11 @@ void sumAlu(void)
 
 void restAlu(void)
 {
-	B3 = B2 - B1;
+	B3 = B1-B2;
+	if(B3<0) carryF = signF = 1;
+	else carryF = signF = 0;
+	if(!B3) zeroF = 1;
+	else zeroF = 0;
 	B2 = B1 = B4 = 0;
 }
 
@@ -836,7 +841,7 @@ void hola()
 	MAR = 4;
 }
 
-void mov (int codigo1, int codigo2, int cuartoDato1)
+void mov (int codigo1, int codigo2, int cuartoDato)
 {
 	switch(codigo2){
 		case 0:
@@ -852,7 +857,7 @@ void mov (int codigo1, int codigo2, int cuartoDato1)
 			BD = dx;
 			break;
 		case 12:
-			BD  = cuartoDato1;
+			BD  = cuartoDato;
 			MAR = BD;
 			MEM(LECTURA);
 			//MBR = memoria[MAR]->cuartoDato;
@@ -876,7 +881,7 @@ void mov (int codigo1, int codigo2, int cuartoDato1)
 			BD  = PC;
 			MAR = BD;
 			MEM(LECTURA);
-			BD  = cuartoDato1;
+			BD  = cuartoDato;
 	}
 	switch(codigo1){
 		case 0:
@@ -915,7 +920,7 @@ void mov (int codigo1, int codigo2, int cuartoDato1)
 	}
 }
 
-void add(int codigo1, int codigo2, int cuartoDato1)
+void add(int codigo1, int codigo2, int cuartoDato)
 {
 	switch(codigo2){
 		case 0:
@@ -931,7 +936,7 @@ void add(int codigo1, int codigo2, int cuartoDato1)
 			BD = dx;
 			break;
 		case 12:
-			BD  = cuartoDato1;
+			BD  = cuartoDato;
 			MAR = BD;
 			MEM(LECTURA);
 			//MBR = memoria[MAR]->cuartoDato;
@@ -952,7 +957,7 @@ void add(int codigo1, int codigo2, int cuartoDato1)
 			BD  = MBR;
 			break;
 		case 15:
-			BD  = cuartoDato1;
+			BD  = cuartoDato;
 			MAR = BD;
 			MEM(LECTURA);
 			//MBR = memoria[MAR]->cuartoDato;
@@ -973,7 +978,7 @@ void add(int codigo1, int codigo2, int cuartoDato1)
 			BD = dx;
 			break;
 		case 12:
-			BD  = cuartoDato1;
+			BD  = cuartoDato;
 			MAR = BD;
 			MEM(LECTURA);
 			//MBR = memoria[MAR]->cuartoDato;
@@ -994,7 +999,7 @@ void add(int codigo1, int codigo2, int cuartoDato1)
 			BD  = MBR;
 			break;
 		case 15:
-			BD  = cuartoDato1;
+			BD  = cuartoDato;
 			MAR = BD;
 			MEM(LECTURA);
 			//MBR = memoria[MAR]->cuartoDato;
@@ -1018,7 +1023,7 @@ void add(int codigo1, int codigo2, int cuartoDato1)
 			break;
 		case 12:
 			MBR = BD;
-			BD  = cuartoDato1;
+			BD  = cuartoDato;
 			MAR = BD;
 			MEM(ESCRITURA);
 			//memoria[cuartoDato1]->cuartoDato = BD;
@@ -1038,6 +1043,93 @@ void add(int codigo1, int codigo2, int cuartoDato1)
 			//memoria[bl]->cuartoDato = BD;
 			break;
 	}
+}
+
+void cmp(int codigo1, int codigo2, int cuartoDato)
+{
+	switch(codigo2){
+		case 0:
+			BD = ax; //BD<-ax
+			break;
+		case 1:
+			BD = bx;
+			break;
+		case 2:
+			BD = cx;
+			break;
+		case 3:
+			BD = dx;
+			break;
+		case 12:
+			BD  = cuartoDato;
+			MAR = BD;
+			MEM(LECTURA);
+			//MBR = memoria[MAR]->cuartoDato;
+			BD  = MBR;
+			break;
+		case 13:
+			BD  = bl;
+			MAR = BD;
+			MEM(LECTURA);
+			//MBR = memoria[MAR]->cuartoDato;
+			BD  = MBR;
+			break;
+		case 14:
+			BD  = bh;
+			MAR = BD;
+			MEM(LECTURA);
+			//MBR = memoria[MAR]->cuartoDato;
+			BD  = MBR;
+			break;
+		case 15:
+			BD  = PC;
+			MAR = BD;
+			MEM(LECTURA);
+			BD  = cuartoDato;
+	}
+	B1 = BD;
+	switch(codigo1){
+		case 0:
+			BD = ax; //BD<-ax
+			break;
+		case 1:
+			BD = bx;
+			break;
+		case 2:
+			BD = cx;
+			break;
+		case 3:
+			BD = dx;
+			break;
+		case 12:
+			BD  = cuartoDato;
+			MAR = BD;
+			MEM(LECTURA);
+			//MBR = memoria[MAR]->cuartoDato;
+			BD  = MBR;
+			break;
+		case 13:
+			BD  = bl;
+			MAR = BD;
+			MEM(LECTURA);
+			//MBR = memoria[MAR]->cuartoDato;
+			BD  = MBR;
+			break;
+		case 14:
+			BD  = bh;
+			MAR = BD;
+			MEM(LECTURA);
+			//MBR = memoria[MAR]->cuartoDato;
+			BD  = MBR;
+			break;
+		case 15:
+			BD  = PC;
+			MAR = BD;
+			MEM(LECTURA);
+			BD  = cuartoDato;
+	}
+	B2 = BD;
+	restAlu();
 }
 
 void test(int flag, int salto)
