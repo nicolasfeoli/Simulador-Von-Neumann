@@ -1,58 +1,5 @@
-#include "stdio.h"
-#include "stdlib.h"
-#include <string.h>
+#include "structs.h"
 
-##ifndef LECTURA
-#define LECTURA 1
-#endif
-
-##ifndef ESCRITURA
-#define ESCRITURA 0
-#endif
-
-void MEM(int);
-
-typedef struct {
-	int codigoOp;
-	int operando1;
-	int operando2;
-	int cuartoDato;
-} celda;
-
-static char prog[256][500];
-
-celda* memoria[256];
-
-//FUENTE8  FUENTE16
-//DESTINO8 DESTINO16
-//INDEX
-
-
-/*
-	1. Acerca de y ayuda
-	2. 
-*/ 
-
-int i;
-
-char* IR = "mov ax, 5";
-celda* IR_fetch;
-static int PC = 0,
-	ah,al,ax  = 0,
-	bh,bl,bx  = 0,
-	ch,cl,cx  = 0,
-	dl,dh,dx  = 0,
-	zeroF      = 0, signF  = 0,
-	interruptF = 0, carryF = 0;
-
-static int B1 =0,B2=0,B3=0,B4=0;
-static int BD =0;
-static int MAR=0;
-static int MBR=0;
-
-
-
-GtkWidget *AXdec,*BXdec,*CXdec,*DXdec;
 void excInstruccion(char reg[],int programCounter)
 {
 	char ins[5],par1[5],par2[5],tmp[3];
@@ -841,6 +788,11 @@ void shrAlu(void)
 	B2 = B1 = B4 = 0;
 }
 
+void hola()
+{
+	MAR = 4;
+}
+
 void mov (int codigo1, int codigo2, int cuartoDato)
 {
 	switch(codigo2){
@@ -1195,21 +1147,19 @@ void cicloFetch()
 	MEM(LECTURA); //READ
 	BD = MBR;     //BD  <- MBR
 	IR = BD;      //IR  <- BD
+	PC++;         //inc PC
 
 	//Subciclo de Decodificacion
 	//Aqui no va nada porque en teoria ya lo tenemos 
 
 	//Subciclo indirecto
-	//Esto se lleva a cabo durante la ejecucion de la instrucion	
+	//Esto se lleva a cabo durante la ejecucion de la instrucion
 
+	//	
 	//Subciclo de ejecucion
 
+	switch(codigoOp)
 
-	//subciclo de interrupcion
-	if(interruptF)
-		printf("Ventanita xD\n");
-
-	PC++;          //inc PC
 }
 
 /*
