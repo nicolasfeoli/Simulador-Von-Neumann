@@ -17,9 +17,8 @@ static void open_dialog(GtkWidget* buton, gpointer window)
   else
     g_print("the cancel was clicked");
   gtk_widget_destroy(dialog);
-
-
 }
+
 int main(int argc, char* argv[])
 {
   gtk_init(&argc,&argv);//INICIA GTK

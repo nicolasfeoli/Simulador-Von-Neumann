@@ -426,7 +426,7 @@ char* abrirArchivo(GtkButton* button, gpointer func_data)
     return buffer;
 }
 int powW(int a,int b) {return b==0?1:a*powW(a,--b);}
-
+	
 int getRThigh(int valor)
 {
 	int i;
@@ -733,13 +733,17 @@ void mulAlu(void)
 void sumAlu(void)
 {
 	B3 = B2 + B1;
+	if(!B3) zeroF = 1;
+	if(B3 > 65535){B3 = B3%65535; carryF=1;}
+	if(B3 < 0) carryF = signF = 1;
+	else carryF = signF = 0;
 	B2 = B1 = B4 = 0;
 }
 
 void restAlu(void)
 {
 	B3 = B1-B2;
-	if(B3<0) carryF = signF = 1;
+	if(B3 < 0) carryF = signF = 1;
 	else carryF = signF = 0;
 	if(!B3) zeroF = 1;
 	else zeroF = 0;
@@ -748,6 +752,7 @@ void restAlu(void)
 
 void divAlu(void)
 {
+	if(!B2) ventanaError("Division por Cero");
 	B3 = B1 / B2; // Hay que revisar que el orden este bien
 	B4 = B1 % B2;  // lo mismo
 }

@@ -1,0 +1,8 @@
+mov ah,8
+mov al,9
+jmp 5
+mov cx, cx
+cmp ah,al
+jz 2
+mov bh, 20
+mov dx, [bh]
