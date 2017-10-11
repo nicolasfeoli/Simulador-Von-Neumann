@@ -2,13 +2,9 @@
 #include "stdlib.h"
 #include <string.h>
 
-##ifndef LECTURA
 #define LECTURA 1
-#endif
 
-##ifndef ESCRITURA
 #define ESCRITURA 0
-#endif
 
 void MEM(int);
 
@@ -56,6 +52,57 @@ void ventanaError(char errorTipo[])
 }
 
 GtkWidget *AXdec,*BXdec,*CXdec,*DXdec;
+void reverse(char s[])
+{
+     int i,j;
+     char digit;
+     for (i=0,j=strlen(s)-1;i<j;i++,j--)
+     {
+         digit=s[i];
+         s[i]=s[j];
+         s[j]=digit;
+     }
+}
+char* itoa(int num, char* str, int base)
+{
+    int i = 0,sign = 0; 
+    if (!num)//si es 0
+    {
+        str[i++] = '0';
+        str[i] = '\0';
+        return str;
+    }
+    if (num < 0 && base == 10)//base 10
+    {
+        sign = 1;
+        num *= -1;
+    }
+    while (num != 0)// cambia si ocupa letras
+    {
+        int rem = num % base;
+        str[i++] = (rem > 9)? (rem-10) + 'A' : rem + '0';
+        num = num/base;
+    }
+    if (sign) str[i++] = '-'; // si es negativo pone el -
+    str[i] = '\0'; // le pone el final de str
+    reverse(str);
+    return str;
+}
+void ventanaError(int pp,char*err)
+{
+  GtkWidget *dialog,*label,*lblerr;
+  dialog = gtk_dialog_new_with_buttons("ERROR",NULL,GTK_DIALOG_MODAL,GTK_STOCK_OK,GTK_RESPONSE_OK,NULL);
+  char e[3];
+  label = gtk_label_new(itoa(pp+1,e,10));
+  lblerr = gtk_label_new(err);
+  gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))),label,0,0,0);
+  gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))),lblerr,0,0,0);
+  gtk_widget_show_all(dialog);
+  gint response = gtk_dialog_run(GTK_DIALOG(dialog));
+  gtk_widget_destroy(dialog);
+
+
+}
 void excInstruccion(char reg[],int programCounter)
 {
 	char ins[5],par1[5],par2[5],tmp[3];
@@ -133,6 +180,7 @@ void excInstruccion(char reg[],int programCounter)
 			instruccion = 11;
 		}
 		else{
+			ventanaError(programCounter,"Funcion no existe.");
 			printf("%s\n", "#ERROR");
 			printf("%i\n", programCounter); 
 		}
@@ -147,6 +195,7 @@ void excInstruccion(char reg[],int programCounter)
 			}
 			else
 			{
+				ventanaError(programCounter,"Primer parametro no puede ser inmediato.");
 				printf("%s\n", "#ERROR");
 				printf("%i\n", programCounter); 
 			}
@@ -221,6 +270,7 @@ void excInstruccion(char reg[],int programCounter)
 									if(par1[3]==']')
 										parametro1 = 14;
 									else{
+										ventanaError(programCounter,"Hace falta ].");
 										printf("%s\n","#ERROR" );
 										printf("%i\n", programCounter); 
 									}
@@ -229,11 +279,13 @@ void excInstruccion(char reg[],int programCounter)
 									if(par1[3]==']')
 										parametro1 = 13;
 									else{
+										ventanaError(programCounter,"Hace falta ].");
 										printf("%s\n","#ERROR" );
 										printf("%i\n", programCounter); 
 									}
 									break;
 								default:
+									ventanaError(programCounter,"Parametro 1 no existe.");
 									printf("%s\n","#ERROR" );
 									printf("%i\n", programCounter); 
 							}
@@ -249,6 +301,7 @@ void excInstruccion(char reg[],int programCounter)
 								parametro1 = 12;
 							}
 							else{
+								ventanaError(programCounter,"Indice debe ser inmediato|bh|bl.");
 								printf("%s\n","#ERROR" );
 								printf("%i\n", programCounter); 
 							}
@@ -260,6 +313,7 @@ void excInstruccion(char reg[],int programCounter)
 						printf("%i\n", programCounter); 
 					}
 					else{
+						ventanaError(programCounter,"Hace falta parametro o no existe.");
 						printf("%s\n", "#ERROR");
 						printf("%i\n", programCounter); 
 					}
@@ -276,6 +330,7 @@ void excInstruccion(char reg[],int programCounter)
 			}
 			else
 			{
+				ventanaError(programCounter,"Segundo parametro no puede ser inmediato.");
 				printf("%s\n", "#ERROR");
 				printf("%i\n", programCounter); 
 			}
@@ -350,6 +405,7 @@ void excInstruccion(char reg[],int programCounter)
 									if(par2[3]==']')
 										parametro2 = 14;
 									else{
+										ventanaError(programCounter,"Hace falta ]");
 										printf("%s\n","#ERROR" );
 										printf("%i\n", programCounter); 
 									}
@@ -358,11 +414,13 @@ void excInstruccion(char reg[],int programCounter)
 									if(par2[3]==']')
 										parametro2 = 13;
 									else{
+										ventanaError(programCounter,"Hace falta ]");
 										printf("%s\n","#ERROR" );
 										printf("%i\n", programCounter); 
 									}
 									break;
 								default:
+									ventanaError(programCounter,"Parametro 2 no existe.");
 									printf("%s\n","#ERROR" );
 									printf("%i\n", programCounter); 
 							}
@@ -378,6 +436,7 @@ void excInstruccion(char reg[],int programCounter)
 								parametro2 = 12;
 							}
 							else{
+								ventanaError(programCounter,"Indice debe ser inmediato|bh|bl.");
 								printf("%s\n","#ERROR" );
 								printf("%i\n", programCounter); 
 							}
@@ -389,6 +448,7 @@ void excInstruccion(char reg[],int programCounter)
 						printf("%i\n", programCounter); 
 					}
 					else{
+						ventanaError(programCounter,"Hace falta parametro o no existe.");
 						printf("%s\n", "#ERROR");
 						printf("%i\n", programCounter); 
 					}
@@ -398,12 +458,18 @@ void excInstruccion(char reg[],int programCounter)
 
 	if((parametro1>=12 && parametro1<=14 && parametro2>=12 && parametro2<=14 )||(parametro1>=4 && parametro1<=11 && parametro2>=0 && parametro2<=3)||(parametro2>=4 && parametro2<=11 && parametro1>=0 && parametro1<=3))
 	{
+		ventanaError(programCounter,"Parametros no pueden ir de mem->mem o de 16/8 bits a 8/16.");
 		printf("%s\n", "#ERROR");
-		printf("%i\n", programCounter); 
+		printf("%i\n", programCounter);
 	}
 	else{
 		printf("%s\n", "todo salio perfect"); 
 	}
+
+	memoria[programCounter]-> codigoOp = instruccion;
+	memoria[programCounter]-> operando1 = parametro1;
+	memoria[programCounter]-> operando2 = parametro2;
+	memoria[programCounter]-> cuartoDato = cuartoDato;
 }
 void getRenglones(char* text)
 {
@@ -427,8 +493,9 @@ void getRenglones(char* text)
 		}
 		i++;
 	}
+	int t = PC;
 	PC=0;
-	for(PC = 0;PC<24;PC++)
+	for(PC = 0;PC<t;PC++)
 		excInstruccion(prog[PC],PC); 
 }
 gchar *get_dialog_path_selection()
@@ -505,42 +572,7 @@ int getRTlow(int valor)
 	}
 	return res;
 }
-void reverse(char s[])
-{
-     int i,j;
-     char digit;
-     for (i=0,j=strlen(s)-1;i<j;i++,j--)
-     {
-         digit=s[i];
-         s[i]=s[j];
-         s[j]=digit;
-     }
-}
-char* itoa(int num, char* str, int base)
-{
-    int i = 0,sign = 0; 
-    if (!num)//si es 0
-    {
-        str[i++] = '0';
-        str[i] = '\0';
-        return str;
-    }
-    if (num < 0 && base == 10)//base 10
-    {
-        sign = 1;
-        num *= -1;
-    }
-    while (num != 0)// cambia si ocupa letras
-    {
-        int rem = num % base;
-        str[i++] = (rem > 9)? (rem-10) + 'A' : rem + '0';
-        num = num/base;
-    }
-    if (sign) str[i++] = '-'; // si es negativo pone el -
-    str[i] = '\0'; // le pone el final de str
-    reverse(str);
-    return str;
-}
+
 void actualizarRT(int a,int b,int c, int d)
 {
 	ax=a%65535;
@@ -558,6 +590,7 @@ void onBtoOKClicked(GtkButton* button, gpointer func_data)
 	actualizarRT(atoi(gtk_entry_get_text(GTK_ENTRY(AXdec))),atoi(gtk_entry_get_text(GTK_ENTRY(BXdec))),atoi(gtk_entry_get_text(GTK_ENTRY(CXdec))),atoi(gtk_entry_get_text(GTK_ENTRY(DXdec))));
 	gtk_widget_destroy (GTK_WIDGET(func_data));
 }
+
 static void ventanaIR()
 {
 	GtkWidget *window,*grid,*label;
@@ -1184,13 +1217,13 @@ void test(int flag, int salto)
 	}
 }
 
-void in()
+void inMicro()
 {
 	printf("Microinstruccion in. Dato entrada: ");
 	scanf("%d", &MBR);
 }
 
-void out()
+void outMicro()
 {
 	printf("Microinstruccion out. Dato salida: %d\n", MBR);
 }
@@ -1213,16 +1246,107 @@ void MEM(int operacion)
 	}
 }
 
-void cli()
+void cli(void)
 {
 	interruptF = 0;
 }
 
-void sti()
+void sti(void)
 {
 	interruptF = 1;
 }
-
+void out(int a)
+{
+	switch(a)
+	{
+		case 0:
+			scanf("%i",&ax);
+			break;
+		case 1:
+			scanf("%i",&bx);
+			break;
+		case 2:
+			scanf("%i",&cx);	
+			break;
+		case 3:
+			scanf("%i",&dx);
+			break;
+		case 4:
+			scanf("%i",&al);
+			break;
+		case 5:
+			scanf("%i",&bl);
+			break;
+		case 6:
+			scanf("%i",&cl);
+			break;
+		case 7:
+			scanf("%i",&dl);
+			break;
+		case 8:
+			scanf("%i",&ah);
+			break;
+		case 9:
+			scanf("%i",&bh);
+			break;
+		case 10:
+			scanf("%i",&ch);
+			break;
+		case 11:
+			scanf("%i",&dh);
+			break;
+	}
+}
+void in(int a)
+{
+	switch(a)
+	{
+		case 0:
+			printf("%i\n",ax);
+			break;
+		case 1:
+			printf("%i\n",bx);
+			break;
+		case 2:
+			printf("%i\n",cx);	
+			break;
+		case 3:
+			printf("%i\n",dx);
+			break;
+		case 4:
+			printf("%i\n",al);
+			break;
+		case 5:
+			printf("%i\n",bl);
+			break;
+		case 6:
+			printf("%i\n",cl);
+			break;
+		case 7:
+			printf("%i\n",dl);
+			break;
+		case 8:
+			printf("%i\n",ah);
+			break;
+		case 9:
+			printf("%i\n",bh);
+			break;
+		case 10:
+			printf("%i\n",ch);
+			break;
+		case 11:
+			printf("%i\n",dh);
+			break;
+	}
+}
+void jz(int a)
+{
+	if(zeroF) PC = a-1;
+}
+void jmp(int a)
+{
+	PC = a -1;
+}
 void cicloFetch()
 {
 	//Subciclo busqueda
@@ -1234,7 +1358,39 @@ void cicloFetch()
 
 	//Subciclo de Decodificacion
 	//Aqui no va nada porque en teoria ya lo tenemos 
-
+	int inss = memoria[PC]->codigoOp;
+	int parr1 = memoria[PC]->operando1;
+	int parr2 = memoria[PC]->operando2;
+	int cuarr = memoria[PC]->cuartoDato;
+	switch(inss){
+		case 0:
+			mov(parr1,parr2,cuarr);
+			break;
+		case 2:
+			add(parr1,parr2,cuarr);
+			break;
+		case 4:
+			cmp(parr1,parr2,cuarr);
+			break;
+		case 6:
+			jz(cuarr);
+			break;
+		case 7:
+			jmp(cuarr);
+			break;
+		case 8:
+			out(parr1);
+			break;
+		case 9:
+			in(parr1);
+			break;
+		case 10:
+			sti();
+			break;
+		case 11:
+			cli();
+			break;
+	} 
 	//Subciclo indirecto
 	//Esto se lleva a cabo durante la ejecucion de la instrucion	
 
