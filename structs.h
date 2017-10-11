@@ -46,10 +46,6 @@ static int BD =0;
 static int MAR=0;
 static int MBR=0;
 
-void ventanaError(char errorTipo[])
-{
-	printf("%s\n", errorTipo);
-}
 
 GtkWidget *AXdec,*BXdec,*CXdec,*DXdec;
 void reverse(char s[])
@@ -997,6 +993,30 @@ void add(int codigo1, int codigo2, int cuartoDato)
 		case 3:
 			BD = dx;
 			break;
+		case 4:
+			BD = al;
+			break;
+		case 5:
+			BD = bl;
+			break;
+		case 6:
+			BD = cl;
+			break;
+		case 7:
+			BD = dl;
+			break;
+		case 8:
+			BD = ah;
+			break;
+		case 9:
+			BD = bh;
+			break;
+		case 10:
+			BD = ch;
+			break;
+		case 11:
+			BD = dh;
+			break;
 		case 12:
 			BD  = cuartoDato;
 			MAR = BD;
@@ -1038,6 +1058,30 @@ void add(int codigo1, int codigo2, int cuartoDato)
 			break;
 		case 3:
 			BD = dx;
+			break;
+		case 4:
+			BD = al; 
+			break;
+		case 5:
+			BD = bl; 
+			break;
+		case 6:
+			BD = cl; 
+			break;
+		case 7:
+			BD = dl; 
+			break;
+		case 8:
+			BD = ah; 
+			break;
+		case 9:
+			BD = bh; 
+			break;
+		case 10:
+			BD = ch; 
+			break;
+		case 11:
+			BD = dh; 
 			break;
 		case 12:
 			BD  = cuartoDato;
@@ -1083,6 +1127,30 @@ void add(int codigo1, int codigo2, int cuartoDato)
 		case 3:
 			dx = BD;
 			break;
+		case 4:
+			al = BD;
+			break;
+		case 5:
+			bl = BD;
+			break;
+		case 6:
+			cl = BD;
+			break;
+		case 7:
+			dl = BD;
+			break;
+		case 8:
+			ah = BD;
+			break;
+		case 9:
+			bh = BD;
+			break;
+		case 10:
+			ch = BD;
+			break;
+		case 11:
+			dh = BD;
+			break;
 		case 12:
 			MBR = BD;
 			BD  = cuartoDato;
@@ -1109,7 +1177,8 @@ void add(int codigo1, int codigo2, int cuartoDato)
 
 void cmp(int codigo1, int codigo2, int cuartoDato)
 {
-	switch(codigo2){
+	switch(codigo2)
+	{
 		case 0:
 			BD = ax; //BD<-ax
 			break;
@@ -1121,6 +1190,30 @@ void cmp(int codigo1, int codigo2, int cuartoDato)
 			break;
 		case 3:
 			BD = dx;
+			break;
+		case 4:
+			BD = al;
+			break;
+		case 5:
+			BD = bl;
+			break;
+		case 6:
+			BD = cl;
+			break;
+		case 7:
+			BD = dl;
+			break;
+		case 8:
+			BD = ah;
+			break;
+		case 9:
+			BD = bh;
+			break;
+		case 10:
+			BD = ch;
+			break;
+		case 11:
+			BD = dh;
 			break;
 		case 12:
 			BD  = cuartoDato;
@@ -1163,6 +1256,30 @@ void cmp(int codigo1, int codigo2, int cuartoDato)
 		case 3:
 			BD = dx;
 			break;
+		case 4:
+			BD = ax;
+			break;
+		case 5:
+			BD = ax;
+			break;
+		case 6:
+			BD = ax;
+			break;
+		case 7:
+			BD = ax;
+			break;
+		case 8:
+			BD = ax;
+			break;
+		case 9:
+			BD = ax;
+			break;
+		case 10:
+			BD = ax;
+			break;
+		case 11:
+			BD = ax;
+			break;
 		case 12:
 			BD  = cuartoDato;
 			MAR = BD;
@@ -1184,11 +1301,6 @@ void cmp(int codigo1, int codigo2, int cuartoDato)
 			//MBR = memoria[MAR]->cuartoDato;
 			BD  = MBR;
 			break;
-		case 15:
-			BD  = PC;
-			MAR = BD;
-			MEM(LECTURA);
-			BD  = cuartoDato;
 	}
 	B2 = BD;
 	restAlu();
@@ -1403,17 +1515,27 @@ void cicloFetch()
 
 	PC++;          //inc PC
 }
-/*
-void actualizarRegistro(char entero)
+
+void actualizarRegistro(char registro)
 {
-	//si el registro que cambio es entero -> entero = 1
-	if(entero)
+	//si el registro que cambio es entero -> registro = x
+	switch(registro)
 	{
-
+		case 'x':
+			ah = getRThigh(ax);
+			al = getRTlow(ax);
+			bh = getRThigh(ax);
+			bl = getRTlow(ax);
+			ch = getRThigh(ax);
+			cl = getRTlow(ax);
+			dh = getRThigh(ax);
+			dl = getRTlow(ax);
+			break;
+		case 'h':
+			ax = ah << 8;
+			break;
+		case 'l':
+			break;
 	}
-	else 
-	{
 
-	}
 }
-*/
