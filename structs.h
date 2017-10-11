@@ -74,7 +74,7 @@ char* itoa(int num, char* str, int base)
         sign = 1;
         num *= -1;
     }
-    while (num != 0)// cambia si ocupa letras
+    while (num != 0)/* cambia si ocupa letras*/
     {
         int rem = num % base;
         str[i++] = (rem > 9)? (rem-10) + 'A' : rem + '0';
@@ -826,7 +826,7 @@ void mulAlu(void)
 {
 	B3 = B2 * B1;
 	if(!B3) zeroF = 1;
-	if(B3 > 65535){B3 = B3%65535; carryF=1;}
+	if(B3 > 65535){B3 = B3%65536; carryF=1;}
 	B2 = B1 = B4 = 0;
 }
 
@@ -834,7 +834,7 @@ void sumAlu(void)
 {
 	B3 = B2 + B1;
 	if(!B3) zeroF = 1;
-	if(B3 > 65535){B3 = B3%65535; carryF=1;}
+	if(B3 > 65535){B3 = B3%65536; carryF=1;}
 	if(B3 < 0) carryF = signF = 1;
 	else carryF = signF = 0;
 	B2 = B1 = B4 = 0;
@@ -864,7 +864,7 @@ void andAlu(void)
 {
 	B3 = B1 & B2;
 	B2 = B1 = B4 = 0;
-	if(B3 > 65535){B3 = B3%65535; carryF=1;}
+	if(B3 > 65535){B3 = B3%65536; carryF=1;}
 	if(B3 < 0) signF = 1;
 	if(!B3) zeroF = 1;
 }
@@ -873,7 +873,7 @@ void orAlu(void)
 {
 	B3 = B1 | B2;
 	B2 = B1 = B4 = 0;
-	if(B3 > 65535){B3 = B3%65535; carryF=1;}
+	if(B3 > 65535){B3 = B3%65536; carryF=1;}
 	if(B3 < 0) signF = 1;
 	if(!B3) zeroF = 1;
 }
@@ -882,7 +882,7 @@ void xorAlu(void)
 {
 	B3 = B1 ^ B2;
 	B2 = B1 = B4 = 0;
-	if(B3 > 65535){B3 = B3%65535; carryF=1;}
+	if(B3 > 65535){B3 = B3%65536; carryF=1;}
 	if(B3 < 0) signF = 1;
 	if(!B3) zeroF = 1;
 }
@@ -891,7 +891,7 @@ void notAlu(void)
 {
 	B3 = !B1;
 	B2 = B1 = B4 = 0;
-	if(B3 > 65535){B3 = B3%65535; carryF=1;}
+	if(B3 > 65535){B3 = B3%65536; carryF=1;}
 	if(B3 < 0) signF = 1;
 	if(!B3) zeroF = 1;
 }
@@ -900,7 +900,7 @@ void shlAlu(void)
 {
 	B3 = B1 << B2;
 	B2 = B1 = B4 = 0;
-	if(B3 > 65535){B3 = B3%65535; carryF=1;}
+	if(B3 > 65535){B3 = B3%65536; carryF=1;}
 	if(B3 < 0) signF = 1;
 	if(!B3) zeroF = 1;
 }
@@ -909,7 +909,7 @@ void shrAlu(void)
 {
 	B3 = B1 >> B2;
 	B2 = B1 = B4 = 0;
-	if(B3 > 65535){B3 = B3%65535; carryF=1;}
+	if(B3 > 65535){B3 = B3%65536; carryF=1;}
 	if(B3 < 0) signF = 1;
 	if(!B3) zeroF = 1;
 }
@@ -1101,10 +1101,6 @@ void add(int codigo1, int codigo2, int cuartoDato)
 			break;
 		case 15:
 			BD  = cuartoDato;
-			MAR = BD;
-			MEM(LECTURA);
-			//MBR = memoria[MAR]->cuartoDato;
-			BD  = MBR;
 	}
 	B1 = BD;
 	switch(codigo1){
@@ -1227,6 +1223,7 @@ void add(int codigo1, int codigo2, int cuartoDato)
 			//memoria[bl]->cuartoDato = BD;
 			break;
 		case 14:
+			printf("%s\n","hola" );
 			MBR = BD;
 			BD  = bh;
 			MAR = BD;
@@ -1511,7 +1508,7 @@ void in(int a)
 			break;
 		case 11:
 			printf("%i\n",dh);
-			break;
+			break;	
 	}
 }
 void jz(int a)
@@ -1588,18 +1585,25 @@ void actualizarRegistro(char registro)
 	{
 		case 'x':
 			ah = getRThigh(ax);
-			al = getRTlow(ax);
+			al = getRTlow (ax);
 			bh = getRThigh(ax);
-			bl = getRTlow(ax);
+			bl = getRTlow (ax);
 			ch = getRThigh(ax);
-			cl = getRTlow(ax);
+			cl = getRTlow (ax);
 			dh = getRThigh(ax);
-			dl = getRTlow(ax);
+			dl = getRTlow (ax);
 			break;
 		case 'h':
-			ax = ah << 8;
+			ah = ah % 65536; //asegurarse que no haya overflow
+			ah = ah << 8;
+			al = al % 256; //asegurarse que los bits mayores de al esten vacios
+			ax = al | ah;
+
 			break;
 		case 'l':
+			al = al % 65536; //asegurarse que no haya overflow
+			ax = ax & 65280; // b1111111100000000;
+			ax = ax | al;
 			break;
 	}
 

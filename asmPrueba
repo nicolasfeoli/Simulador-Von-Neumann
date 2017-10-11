@@ -5,5 +5,4 @@ mov cx, cx
 cmp ah,al
 jz 2
 mov bh, 20
-mov [bh], 5
-
+mov [bh], 5   ;add [bh], 16
