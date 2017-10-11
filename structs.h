@@ -31,6 +31,8 @@ celda* memoria[256];
 
 int i;
 
+void cicloFetch();
+
 char* IR = "mov ax, 5";
 celda* IR_fetch;
 static int PC = 0,
@@ -45,7 +47,6 @@ static int B1 =0,B2=0,B3=0,B4=0;
 static int BD =0;
 static int MAR=0;
 static int MBR=0;
-
 
 GtkWidget *AXdec,*BXdec,*CXdec,*DXdec;
 void reverse(char s[])
@@ -460,6 +461,13 @@ void excInstruccion(char reg[],int programCounter)
 	}
 	else{
 		printf("%s\n", "todo salio perfect"); 
+		printf("%i\n", programCounter);
+		if(programCounter==7){
+			printf("%i\n", instruccion);
+			printf("%i\n", parametro1);
+			printf("%i\n", parametro2);
+			printf("%i\n", cuartoDato);
+		}
 	}
 
 	memoria[programCounter]-> codigoOp = instruccion;
@@ -489,10 +497,17 @@ void getRenglones(char* text)
 		}
 		i++;
 	}
-	int t = PC;
-	PC=0;
+	int t = PC + 1;
 	for(PC = 0;PC<t;PC++)
 		excInstruccion(prog[PC],PC); 
+
+	int aaa;
+	PC =0;
+	printf("%s%i\n","aaaaa: ",t );
+	for(aaa=0;aaa<t;aaa++)
+		cicloFetch();
+	printf("%s\n", "ABAJO");
+	printf("%i\n", memoria[20]->cuartoDato);
 }
 gchar *get_dialog_path_selection()
 {
@@ -837,7 +852,7 @@ void restAlu(void)
 
 void divAlu(void)
 {
-	if(!B2) ventanaError("Division por Cero");
+	if(!B2) ventanaError(0,"Division por Cero");
 	else{
 		B3 = B1 / B2;
 		B4 = B1 % B2;
@@ -914,6 +929,30 @@ void mov (int codigo1, int codigo2, int cuartoDato)
 		case 3:
 			BD = dx;
 			break;
+		case 4:
+			BD = al;
+			break;
+		case 5:
+			BD = bl;
+			break;
+		case 6:
+			BD = cl;
+			break;
+		case 7:
+			BD = dl;
+			break;
+		case 8:
+			BD = ah;
+			break;
+		case 9:
+			BD = bh;
+			break;
+		case 10:
+			BD = ch;
+			break;
+		case 11:
+			BD = dh;
+			break;
 		case 12:
 			BD  = cuartoDato;
 			MAR = BD;
@@ -936,9 +975,6 @@ void mov (int codigo1, int codigo2, int cuartoDato)
 			BD  = MBR;
 			break;
 		case 15:
-			BD  = PC;
-			MAR = BD;
-			MEM(LECTURA);
 			BD  = cuartoDato;
 	}
 	switch(codigo1){
@@ -953,6 +989,30 @@ void mov (int codigo1, int codigo2, int cuartoDato)
 			break;
 		case 3:
 			dx = BD;
+			break;
+		case 4:
+			al = BD;
+			break;
+		case 5:
+			bl = BD;
+			break;
+		case 6:
+			cl = BD;
+			break;
+		case 7:
+			dl = BD;
+			break;
+		case 8:
+			ah = BD;
+			break;
+		case 9:
+			bh = BD;
+			break;
+		case 10:
+			ch = BD;
+			break;
+		case 11:
+			dh = BD;
 			break;
 		case 12:
 			MBR = BD;
@@ -973,6 +1033,7 @@ void mov (int codigo1, int codigo2, int cuartoDato)
 			BD  = bh;
 			MAR = BD;
 			MEM(ESCRITURA);
+			printf("%s\n", "llego");
 			//memoria[bh]->cuartoDato = BD;
 			break;
 	}
@@ -1355,6 +1416,8 @@ void MEM(int operacion)
 		memoria[MAR]-> operando1  =  0;
 		memoria[MAR]-> operando2  =  0;
 		memoria[MAR]-> cuartoDato = MBR;
+
+		printf("%s%i\n", "MAR=PC: ",MAR);
 	}
 }
 
@@ -1461,6 +1524,8 @@ void jmp(int a)
 }
 void cicloFetch()
 {
+	printf("%i\n", PC);
+	printf("%s\n", "arriba pc");
 	//Subciclo busqueda
 	BD = PC;      //BD  <- ax
 	MAR = BD;     //B1 <- BD
