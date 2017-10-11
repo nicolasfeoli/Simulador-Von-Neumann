@@ -12,7 +12,7 @@ cmp [7], ax
 cmp ax, [7]
 add ax, 5
 add ax, bx
-add ax, [bh]
+add ax, [ah]
 add [bl], ax
 add [7], ax
 add ax, [7]
