@@ -106,7 +106,7 @@ void excInstruccion(char reg[],int programCounter)
 	memset(&ins[0], 0, sizeof(ins));
 	memset(&par1[0], 0, sizeof(par1));
 	memset(&par2[0], 0, sizeof(par2));
-	int index=0, i, tipo = 1, instruccion = 0 ,parametro1 = 0, parametro2 = 0, cuartoDato = 0;
+	int index=0, i, tipo = 1, instruccion = 0 ,parametro1 = 0, parametro2 = 0, cuartoDato = 0, band = 1;
 	for(i = 0;i<(int)strlen(reg);i++)
 	{
 		switch(tipo)
@@ -176,15 +176,15 @@ void excInstruccion(char reg[],int programCounter)
 		{
 			instruccion = 11;
 		}
-		else{
-			ventanaError(programCounter,"Funcion no existe.");
-			printf("%s\n", "#ERROR");
-			printf("%i\n", programCounter); 
+		else
+		{
+			if(strcmp(ins,"")) ventanaError(programCounter,"Funcion no existe.");
+			band = 0;
 		}
 	}
-	if(1)   // parametro 1
+	if(band)   // parametro 1
 	{
-		if(par1[0]>=0x30 && par1[0]<=0x39 )
+		if(par1[0]>=0x30 && par1[0]<=0x39)
 		{
 			if(instruccion == 7 || instruccion == 6){
 				cuartoDato = atoi(par1);
@@ -193,8 +193,6 @@ void excInstruccion(char reg[],int programCounter)
 			else
 			{
 				ventanaError(programCounter,"Primer parametro no puede ser inmediato.");
-				printf("%s\n", "#ERROR");
-				printf("%i\n", programCounter); 
 			}
 		}
 		else
@@ -268,23 +266,17 @@ void excInstruccion(char reg[],int programCounter)
 										parametro1 = 14;
 									else{
 										ventanaError(programCounter,"Hace falta ].");
-										printf("%s\n","#ERROR" );
-										printf("%i\n", programCounter); 
 									}
 									break;
 								case 'l':
 									if(par1[3]==']')
 										parametro1 = 13;
 									else{
-										ventanaError(programCounter,"Hace falta ].");
-										printf("%s\n","#ERROR" );
-										printf("%i\n", programCounter); 
+										ventanaError(programCounter,"Hace falta ]."); 
 									}
 									break;
 								default:
 									ventanaError(programCounter,"Parametro 1 no existe.");
-									printf("%s\n","#ERROR" );
-									printf("%i\n", programCounter); 
 							}
 							break;
 						default: 
@@ -299,25 +291,17 @@ void excInstruccion(char reg[],int programCounter)
 							}
 							else{
 								ventanaError(programCounter,"Indice debe ser inmediato|bh|bl.");
-								printf("%s\n","#ERROR" );
-								printf("%i\n", programCounter); 
 							}
 					}
 					break;
 				default:
-					if(instruccion == 11 || instruccion == 10){
-						printf("%s\n", "no tiene parametro 1");
-						printf("%i\n", programCounter); 
-					}
-					else{
+					if(!(instruccion == 11 || instruccion == 10)){
 						ventanaError(programCounter,"Hace falta parametro o no existe.");
-						printf("%s\n", "#ERROR");
-						printf("%i\n", programCounter); 
 					}
 			}
 		}
 	}
-	if(1)//parametro 2
+	if(band)//parametro 2
 	{
 		if(par2[0]>=0x30 && par2[0]<=0x39 )
 		{
@@ -328,8 +312,6 @@ void excInstruccion(char reg[],int programCounter)
 			else
 			{
 				ventanaError(programCounter,"Segundo parametro no puede ser inmediato.");
-				printf("%s\n", "#ERROR");
-				printf("%i\n", programCounter); 
 			}
 		}
 		else
@@ -403,8 +385,7 @@ void excInstruccion(char reg[],int programCounter)
 										parametro2 = 14;
 									else{
 										ventanaError(programCounter,"Hace falta ]");
-										printf("%s\n","#ERROR" );
-										printf("%i\n", programCounter); 
+
 									}
 									break;
 								case 'l':
@@ -412,14 +393,10 @@ void excInstruccion(char reg[],int programCounter)
 										parametro2 = 13;
 									else{
 										ventanaError(programCounter,"Hace falta ]");
-										printf("%s\n","#ERROR" );
-										printf("%i\n", programCounter); 
 									}
 									break;
 								default:
-									ventanaError(programCounter,"Parametro 2 no existe.");
-									printf("%s\n","#ERROR" );
-									printf("%i\n", programCounter); 
+									ventanaError(programCounter,"Parametro 2 no existe."); 
 							}
 							break;
 						default: 
@@ -434,20 +411,12 @@ void excInstruccion(char reg[],int programCounter)
 							}
 							else{
 								ventanaError(programCounter,"Indice debe ser inmediato|bh|bl.");
-								printf("%s\n","#ERROR" );
-								printf("%i\n", programCounter); 
 							}
 					}
 					break;
 				default:
-					if(instruccion >= 6 || instruccion <= 11){
-						printf("%s\n", "no tiene parametro 2");
-						printf("%i\n", programCounter); 
-					}
-					else{
+					if(!(instruccion >= 6 || instruccion <= 11)){
 						ventanaError(programCounter,"Hace falta parametro o no existe.");
-						printf("%s\n", "#ERROR");
-						printf("%i\n", programCounter); 
 					}
 			}
 		}	
@@ -456,18 +425,6 @@ void excInstruccion(char reg[],int programCounter)
 	if((parametro1>=12 && parametro1<=14 && parametro2>=12 && parametro2<=14 )||(parametro1>=4 && parametro1<=11 && parametro2>=0 && parametro2<=3)||(parametro2>=4 && parametro2<=11 && parametro1>=0 && parametro1<=3))
 	{
 		ventanaError(programCounter,"Parametros no pueden ir de mem->mem o de 16/8 bits a 8/16.");
-		printf("%s\n", "#ERROR");
-		printf("%i\n", programCounter);
-	}
-	else{
-		printf("%s\n", "todo salio perfect"); 
-		printf("%i\n", programCounter);
-		if(programCounter==7){
-			printf("%i\n", instruccion);
-			printf("%i\n", parametro1);
-			printf("%i\n", parametro2);
-			printf("%i\n", cuartoDato);
-		}
 	}
 
 	memoria[programCounter]-> codigoOp = instruccion;
@@ -503,11 +460,8 @@ void getRenglones(char* text)
 
 	int aaa;
 	PC =0;
-	printf("%s%i\n","aaaaa: ",t );
 	for(aaa=0;aaa<t;aaa++)
 		cicloFetch();
-	printf("%s\n", "ABAJO");
-	printf("%i\n", memoria[20]->cuartoDato);
 }
 gchar *get_dialog_path_selection()
 {
@@ -1033,12 +987,34 @@ void mov (int codigo1, int codigo2, int cuartoDato)
 			BD  = bh;
 			MAR = BD;
 			MEM(ESCRITURA);
-			printf("%s\n", "llego");
 			//memoria[bh]->cuartoDato = BD;
 			break;
 	}
 }
 
+
+/*
+
+**********DATOS*********
+Madre = hija + 24
+Madre + 6 = 3·(hija + 6)
+
+************************
+(hija + 24) + 6 = 3·(hija + 6)
+hija + 30 = 3·hija + 3·6
+30 = 3·hija - hija + 18
+30 = 2·hija + 18
+(30-18)/2 = hija
+6 = hija
+
+*********ACTUAL*********
+Madre = 6 + 24 = 30
+Hija = 6
+
+*******DENTRO 6*******
+Madre = 36
+Hija = 12
+*/
 void add(int codigo1, int codigo2, int cuartoDato)
 {
 	switch(codigo2){
@@ -1077,10 +1053,7 @@ void add(int codigo1, int codigo2, int cuartoDato)
 			break;
 		case 15:
 			BD  = cuartoDato;
-			MAR = BD;
-			MEM(LECTURA);
-			//MBR = memoria[MAR]->cuartoDato;
-			BD  = MBR;
+			break;
 	}
 	B1 = BD;
 	switch(codigo1){
@@ -1119,10 +1092,7 @@ void add(int codigo1, int codigo2, int cuartoDato)
 			break;
 		case 15:
 			BD  = cuartoDato;
-			MAR = BD;
-			MEM(LECTURA);
-			//MBR = memoria[MAR]->cuartoDato;
-			BD  = MBR;
+			break;
 	}
 	B2 = BD;
 	sumAlu();
@@ -1201,9 +1171,6 @@ void cmp(int codigo1, int codigo2, int cuartoDato)
 			BD  = MBR;
 			break;
 		case 15:
-			BD  = PC;
-			MAR = BD;
-			MEM(LECTURA);
 			BD  = cuartoDato;
 	}
 	B1 = BD;
@@ -1242,9 +1209,6 @@ void cmp(int codigo1, int codigo2, int cuartoDato)
 			BD  = MBR;
 			break;
 		case 15:
-			BD  = PC;
-			MAR = BD;
-			MEM(LECTURA);
 			BD  = cuartoDato;
 	}
 	B2 = BD;
@@ -1314,7 +1278,7 @@ void sti(void)
 {
 	interruptF = 1;
 }
-void out(int a)
+void in(int a)
 {
 	switch(a)
 	{
@@ -1356,8 +1320,9 @@ void out(int a)
 			break;
 	}
 }
-void in(int a)
+void out(int a)
 {
+	printf("%s%i\n","OUT",a );
 	switch(a)
 	{
 		case 0:
@@ -1400,16 +1365,16 @@ void in(int a)
 }
 void jz(int a)
 {
-	if(zeroF) PC = a-1;
+	printf("%i\n",zeroF+100);
+	if(zeroF) PC = a - 1;
 }
 void jmp(int a)
 {
 	PC = a -1;
 }
-void cicloFetch()
+void cicloFetch() 
 {
 	printf("%i\n", PC);
-	printf("%s\n", "arriba pc");
 	//Subciclo busqueda
 	BD = PC;      //BD  <- ax
 	MAR = BD;     //B1 <- BD
@@ -1423,6 +1388,8 @@ void cicloFetch()
 	int parr1 = memoria[PC]->operando1;
 	int parr2 = memoria[PC]->operando2;
 	int cuarr = memoria[PC]->cuartoDato;
+
+	//if(PC==11) printf("%i\n", inss);
 	switch(inss){
 		case 0:
 			mov(parr1,parr2,cuarr);
@@ -1440,6 +1407,7 @@ void cicloFetch()
 			jmp(cuarr);
 			break;
 		case 8:
+			printf("%s\n","hmmmmmmm" );
 			out(parr1);
 			break;
 		case 9:
