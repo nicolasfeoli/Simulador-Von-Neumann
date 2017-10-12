@@ -33,7 +33,8 @@ int i;
 
 void cicloFetch();
 
-char* IR = "mov ax, 5";
+char* IR = "mov ax, 5", *buff = "   ";
+int size = 0;
 celda* IR_fetch;
 static int PC = 0,
 	ah,al,ax  = 0,
@@ -114,7 +115,6 @@ void ventanaInterrupt()
 }
 void excInstruccion(char reg[],int programCounter)
 {
-	prog[programCounter] = 
 	char ins[5],par1[5],par2[5],tmp[3];
 	memset(&ins[0], 0, sizeof(ins));
 	memset(&par1[0], 0, sizeof(par1));
@@ -512,7 +512,7 @@ void abrirArchivo(GtkButton* button, gpointer func_data)
 	       	fseek(file, 0, SEEK_END);//enceuntra ultimo byte del archivo
 	       	tamano = ftell(file);//tamaño del inicio al fin
 	       	rewind(file);//se pone al inicio del archivo				
-
+	       	printf("%i\n", tamano);
 	       	buffer = (char*) malloc(sizeof(char) * (tamano + 1) );//crea el char* donde estara
 	       	lenRes = fread(buffer, sizeof(char), tamano, file);//lee todo
 	       	buffer[tamano] = '\0';//para que sea el fin del string
@@ -526,6 +526,7 @@ void abrirArchivo(GtkButton* button, gpointer func_data)
 	    }
 	    getRenglones(buffer);
 	    buff = buffer;
+	    size = tamano;
 	}
 }
 int powW(int a,int b) {return b==0?1:a*powW(a,--b);}

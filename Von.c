@@ -12,16 +12,42 @@
       cc `pkg-config --cflags gtk+-3.0` Von.c -o Von `pkg-config --libs gtk+-3.0`
 */
 
+GtkWidget* createConsoleBox(GtkTextBuffer * gtkbuffer,char* b,int s)
+{
 
+    printf("%i\n", s);
+    
+    gtk_text_buffer_set_text(gtkbuffer,b,s);
+    GtkWidget* textArea = gtk_text_view_new_with_buffer(gtkbuffer);
+    GtkWidget* scrolledwindow = gtk_scrolled_window_new(NULL, NULL);
+    GtkWidget* console = gtk_table_new(3, 1, FALSE);
+    
 
+    gtk_container_add(GTK_CONTAINER(scrolledwindow), textArea);
+    gtk_table_attach_defaults(GTK_TABLE(console), scrolledwindow, 0, 1, 0, 1);
+
+    return console;
+}
+gchar* getTextBuffer(GtkTextBuffer* gtkbuffer){
+    GtkTextIter start, end;
+    gchar *text;
+    gtk_text_buffer_get_bounds (gtkbuffer, &start, &end);
+    text = gtk_text_buffer_get_text (gtkbuffer, &start, &end, FALSE);
+    return text;
+}
 static void ventanaSimulador()
 {
-  GtkWidget *txtCode,*dialog,*label,*grid,*btoUC,*btoIR,*btoPC,*btoBD,*btoRT,*btoFlag,*btoALU,*btoMAR,*btoMBR;
- 
+  GtkWidget *txtCode,*p,*consola,*dialog,*label,*grid,*btoUC,*btoIR,*btoPC,*btoBD,*btoRT,*btoFlag,*btoALU,*btoMAR,*btoMBR;
+  
+  GtkTextBuffer * gtkbuffer = gtk_text_buffer_new(NULL);
+  GtkTextBuffer * gtkbuffer2 = gtk_text_buffer_new(NULL);
+
+  p=createConsoleBox(gtkbuffer,buff,size);
+  gchar * tt=getTextBuffer(gtkbuffer);
+  int aaa=strlen(tt);
+  consola= createConsoleBox(gtkbuffer2,getTextBuffer(gtkbuffer),aaa);
   dialog = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-  printf("%s\n", "ccccc");
-  txtCode = gtk_text_view_new_with_buffer("aaaaaaa");
-  printf("%s\n", "mmmm");
+  
   label = gtk_label_new("ARQUITECTURA VON NEWMAN");
   grid = gtk_grid_new();
   btoUC = gtk_button_new_with_label("UC");
@@ -33,22 +59,23 @@ static void ventanaSimulador()
   btoALU = gtk_button_new_with_label("ALU");
   btoMAR = gtk_button_new_with_label("MAR");
   btoMBR = gtk_button_new_with_label("MBR");
-  printf("%s\n", "aaaa");
 
   gtk_container_add(GTK_CONTAINER(dialog),grid);
-  gtk_grid_attach(GTK_GRID(grid),label,0,0,4,1);//COL,FILA,COL,FILA
-  gtk_grid_attach(GTK_GRID(grid),btoUC,0,3,1,1);
-  gtk_grid_attach(GTK_GRID(grid),btoIR,0,1,1,2);
-  gtk_grid_attach(GTK_GRID(grid),btoPC,0,4,1,1);
-  gtk_grid_attach(GTK_GRID(grid),btoBD,1,1,1,5);
-  gtk_grid_attach(GTK_GRID(grid),btoRT,2,1,2,1);
-  gtk_grid_attach(GTK_GRID(grid),btoFlag,2,2,2,1);
-  gtk_grid_attach(GTK_GRID(grid),btoALU,2,3,2,1);
-  gtk_grid_attach(GTK_GRID(grid),btoMAR,2,4,1,1);
-  gtk_grid_attach(GTK_GRID(grid),btoMBR,3,4,1,1);
-  gtk_grid_attach(GTK_GRID(grid),txtCode,4,0,1,4);
-  printf("%s\n", "eeee");
+  gtk_grid_attach(GTK_GRID(grid),label,1,0,4,1);//COL,FILA,COL,FILA
+  gtk_grid_attach(GTK_GRID(grid),btoUC,1,3,1,1);
+  gtk_grid_attach(GTK_GRID(grid),btoIR,1,1,1,2);
+  gtk_grid_attach(GTK_GRID(grid),btoPC,1,4,1,1);
+  gtk_grid_attach(GTK_GRID(grid),btoBD,2,1,1,5);
+  gtk_grid_attach(GTK_GRID(grid),btoRT,3,1,2,1);
+  gtk_grid_attach(GTK_GRID(grid),btoFlag,3,2,2,1);
+  gtk_grid_attach(GTK_GRID(grid),btoALU,3,3,2,1);
+  gtk_grid_attach(GTK_GRID(grid),btoMAR,3,4,1,1);
+  gtk_grid_attach(GTK_GRID(grid),btoMBR,4,4,1,1);
+  gtk_grid_attach(GTK_GRID(grid),p,5,1,1,4);
+  gtk_grid_attach(GTK_GRID(grid),consola,0,1,1,4);
   gtk_widget_set_size_request(btoUC,50,100);
+  gtk_widget_set_size_request(p,250,100);
+  gtk_widget_set_size_request(consola,250,100);
   gtk_widget_set_size_request(btoIR,100,100);
   gtk_widget_set_size_request(btoPC,50,100);
   gtk_widget_set_size_request(btoBD,100,70);
@@ -57,7 +84,6 @@ static void ventanaSimulador()
   gtk_widget_set_size_request(btoALU,50,100);
   gtk_widget_set_size_request(btoMAR,50,50);
   gtk_widget_set_size_request(btoMBR,50,50);
-  printf("%s\n", "qqqq");
   g_signal_connect(btoIR,"clicked",G_CALLBACK(ventanaIR),dialog);
   g_signal_connect(btoPC,"clicked",G_CALLBACK(ventanaPC),dialog);
   g_signal_connect(btoRT,"clicked",G_CALLBACK(ventanaRT),dialog);
@@ -66,7 +92,6 @@ static void ventanaSimulador()
 
   gtk_widget_set_sensitive (btoUC, FALSE);
   gtk_widget_set_sensitive (btoBD, FALSE);
-  printf("%s\n", "wwww");
   gtk_window_set_title (GTK_WINDOW(dialog), "Simulador");
   gtk_window_set_resizable (GTK_WINDOW(dialog), TRUE);
   gtk_widget_show_all(dialog);
