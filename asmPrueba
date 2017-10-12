@@ -10,4 +10,3 @@ mov bh, 20
 mov [bh], 5
 add [bh], 17
 out cx
-mov ah,8	;ah = 8

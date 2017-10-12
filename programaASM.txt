@@ -2,8 +2,8 @@ mov ax, 5
 mov ax, bx
 mov ax, [bh]
 mov [bl], ax
-mov [7], ax
-mov ax, [7]
+mov [7] ax
+mov al, [7]
 cmp ax, 5
 cmp ax, bx
 cmp ax, [bh]

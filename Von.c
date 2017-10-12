@@ -12,40 +12,18 @@
       cc `pkg-config --cflags gtk+-3.0` Von.c -o Von `pkg-config --libs gtk+-3.0`
 */
 
-GtkWidget* createConsoleBox(GtkTextBuffer * gtkbuffer,char* b,int s)
-{
-
-    printf("%i\n", s);
-    
-    gtk_text_buffer_set_text(gtkbuffer,b,s);
-    GtkWidget* textArea = gtk_text_view_new_with_buffer(gtkbuffer);
-    GtkWidget* scrolledwindow = gtk_scrolled_window_new(NULL, NULL);
-    GtkWidget* console = gtk_table_new(3, 1, FALSE);
-    
-
-    gtk_container_add(GTK_CONTAINER(scrolledwindow), textArea);
-    gtk_table_attach_defaults(GTK_TABLE(console), scrolledwindow, 0, 1, 0, 1);
-
-    return console;
-}
-gchar* getTextBuffer(GtkTextBuffer* gtkbuffer){
-    GtkTextIter start, end;
-    gchar *text;
-    gtk_text_buffer_get_bounds (gtkbuffer, &start, &end);
-    text = gtk_text_buffer_get_text (gtkbuffer, &start, &end, FALSE);
-    return text;
-}
 static void ventanaSimulador()
 {
   GtkWidget *txtCode,*p,*consola,*dialog,*label,*grid,*btoUC,*btoIR,*btoPC,*btoBD,*btoRT,*btoFlag,*btoALU,*btoMAR,*btoMBR;
   
   GtkTextBuffer * gtkbuffer = gtk_text_buffer_new(NULL);
-  GtkTextBuffer * gtkbuffer2 = gtk_text_buffer_new(NULL);
+  gtkbuffer2 = gtk_text_buffer_new(NULL);
 
   p=createConsoleBox(gtkbuffer,buff,size);
-  gchar * tt=getTextBuffer(gtkbuffer);
-  int aaa=strlen(tt);
-  consola= createConsoleBox(gtkbuffer2,getTextBuffer(gtkbuffer),aaa);
+  consola= createConsoleBox(gtkbuffer2,"",0);
+
+  concatBuffer(gtkbuffer2,"soy juande xD") ; 
+
   dialog = gtk_window_new(GTK_WINDOW_TOPLEVEL);
   
   label = gtk_label_new("ARQUITECTURA VON NEWMAN");

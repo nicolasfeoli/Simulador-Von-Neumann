@@ -34,7 +34,7 @@ int i;
 void cicloFetch();
 
 char* IR = "mov ax, 5", *buff = "   ";
-int size = 0;
+int size = 0, lineasPrograma = 0;
 celda* IR_fetch;
 static int PC = 0,
 	ah,al,ax  = 0,
@@ -50,6 +50,36 @@ static int MAR=0;
 static int MBR=0;
 
 GtkWidget *AXdec,*BXdec,*CXdec,*DXdec;
+GtkTextBuffer * gtkbuffer2;
+
+GtkWidget* createConsoleBox(GtkTextBuffer * gtkbuffer,char* b,int s)
+{
+
+    printf("%i\n", s);
+    
+    gtk_text_buffer_set_text(gtkbuffer,b,s);
+    GtkWidget* textArea = gtk_text_view_new_with_buffer(gtkbuffer);
+    GtkWidget* scrolledwindow = gtk_scrolled_window_new(NULL, NULL);
+    GtkWidget* console = gtk_table_new(3, 1, FALSE);
+    
+
+    gtk_container_add(GTK_CONTAINER(scrolledwindow), textArea);
+    gtk_table_attach_defaults(GTK_TABLE(console), scrolledwindow, 0, 1, 0, 1);
+
+    return console;
+}
+gchar* getTextBuffer(GtkTextBuffer* gtkbuffer){
+    GtkTextIter start, end;
+    gchar *text;
+    gtk_text_buffer_get_bounds (gtkbuffer, &start, &end);
+    text = gtk_text_buffer_get_text (gtkbuffer, &start, &end, FALSE);
+    return text;
+}
+void concatBuffer(GtkTextBuffer * gtkbf,gchar* str)
+{
+    gchar* qwe = g_strconcat(getTextBuffer(gtkbf),str,"\n",NULL);
+    gtk_text_buffer_set_text(gtkbf,qwe,strlen(qwe));
+}
 void reverse(char s[])
 {
      int i,j;
@@ -467,14 +497,12 @@ void getRenglones(char* text)
 		}
 		i++;
 	}
-	int t = PC + 1;
-	for(PC = 0;PC<t;PC++)
+	lineasPrograma = PC + 1;
+	for(PC = 0;PC<lineasPrograma;PC++)
 		excInstruccion(prog[PC],PC); 
-
-	int aaa;
 	PC =0;
-	for(aaa=0;aaa<t;aaa++)
-		cicloFetch();
+
+
 }
 gchar *get_dialog_path_selection()
 {
@@ -588,6 +616,11 @@ static void ventanaIR()
 	gtk_window_set_title (GTK_WINDOW(window), "Registro de Instruccion");
   	gtk_window_set_resizable (GTK_WINDOW(window), FALSE);
   	gtk_widget_show_all(window);
+
+  	int aaa;
+
+	for(aaa=0;aaa<lineasPrograma;aaa++)
+		cicloFetch();
 }
 static void ventanaPC()
 {
@@ -1432,6 +1465,7 @@ void in(int a)
 }
 void out(int a)
 {
+	char temp[5];
 	switch(a)
 	{
 		case 0:
@@ -1441,6 +1475,7 @@ void out(int a)
 			printf("%i\n",bx);
 			break;
 		case 2:
+			concatBuffer(gtkbuffer2,itoa(cx,temp,10));
 			printf("%i\n",cx);	
 			break;
 		case 3:
