@@ -16,10 +16,12 @@
 
 static void ventanaSimulador()
 {
-  GtkWidget *dialog,*label,*grid,*btoUC,*btoIR,*btoPC,*btoBD,*btoRT,*btoFlag,*btoALU,*btoMAR,*btoMBR;
+  GtkWidget *txtCode,*dialog,*label,*grid,*btoUC,*btoIR,*btoPC,*btoBD,*btoRT,*btoFlag,*btoALU,*btoMAR,*btoMBR;
  
   dialog = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-
+  printf("%s\n", "ccccc");
+  txtCode = gtk_text_view_new_with_buffer("aaaaaaa");
+  printf("%s\n", "mmmm");
   label = gtk_label_new("ARQUITECTURA VON NEWMAN");
   grid = gtk_grid_new();
   btoUC = gtk_button_new_with_label("UC");
@@ -31,7 +33,7 @@ static void ventanaSimulador()
   btoALU = gtk_button_new_with_label("ALU");
   btoMAR = gtk_button_new_with_label("MAR");
   btoMBR = gtk_button_new_with_label("MBR");
-
+  printf("%s\n", "aaaa");
 
   gtk_container_add(GTK_CONTAINER(dialog),grid);
   gtk_grid_attach(GTK_GRID(grid),label,0,0,4,1);//COL,FILA,COL,FILA
@@ -44,7 +46,8 @@ static void ventanaSimulador()
   gtk_grid_attach(GTK_GRID(grid),btoALU,2,3,2,1);
   gtk_grid_attach(GTK_GRID(grid),btoMAR,2,4,1,1);
   gtk_grid_attach(GTK_GRID(grid),btoMBR,3,4,1,1);
-
+  gtk_grid_attach(GTK_GRID(grid),txtCode,4,0,1,4);
+  printf("%s\n", "eeee");
   gtk_widget_set_size_request(btoUC,50,100);
   gtk_widget_set_size_request(btoIR,100,100);
   gtk_widget_set_size_request(btoPC,50,100);
@@ -54,7 +57,7 @@ static void ventanaSimulador()
   gtk_widget_set_size_request(btoALU,50,100);
   gtk_widget_set_size_request(btoMAR,50,50);
   gtk_widget_set_size_request(btoMBR,50,50);
-
+  printf("%s\n", "qqqq");
   g_signal_connect(btoIR,"clicked",G_CALLBACK(ventanaIR),dialog);
   g_signal_connect(btoPC,"clicked",G_CALLBACK(ventanaPC),dialog);
   g_signal_connect(btoRT,"clicked",G_CALLBACK(ventanaRT),dialog);
@@ -63,7 +66,7 @@ static void ventanaSimulador()
 
   gtk_widget_set_sensitive (btoUC, FALSE);
   gtk_widget_set_sensitive (btoBD, FALSE);
-
+  printf("%s\n", "wwww");
   gtk_window_set_title (GTK_WINDOW(dialog), "Simulador");
   gtk_window_set_resizable (GTK_WINDOW(dialog), TRUE);
   gtk_widget_show_all(dialog);

@@ -97,11 +97,24 @@ void ventanaError(int pp,char*err)
   gtk_widget_show_all(dialog);
   gint response = gtk_dialog_run(GTK_DIALOG(dialog));
   gtk_widget_destroy(dialog);
+}
+
+void ventanaInterrupt()
+{
+  GtkWidget *dialog,*label;
+  dialog = gtk_dialog_new_with_buttons("ERROR",NULL,GTK_DIALOG_MODAL,GTK_STOCK_OK,GTK_RESPONSE_OK,NULL);
+  label = gtk_label_new("Interrupción creada");
+  gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))),label,0,0,0);
+  gtk_widget_show_all(dialog);
+  gint response = gtk_dialog_run(GTK_DIALOG(dialog));
+
+  gtk_widget_destroy(dialog);
 
 
 }
 void excInstruccion(char reg[],int programCounter)
 {
+	prog[programCounter] = 
 	char ins[5],par1[5],par2[5],tmp[3];
 	memset(&ins[0], 0, sizeof(ins));
 	memset(&par1[0], 0, sizeof(par1));
@@ -478,7 +491,7 @@ gchar *get_dialog_path_selection()
     }
     else
     {
-    	printf("Path selection: Canceled.\n");
+    	printf("Seleccion de archivo cancelado.\n");
     	path = NULL;
     }
 
@@ -486,32 +499,34 @@ gchar *get_dialog_path_selection()
     
     return path;
 }
-char* abrirArchivo(GtkButton* button, gpointer func_data) 
+void abrirArchivo(GtkButton* button, gpointer func_data) 
 { 
-	const char *filename = get_dialog_path_selection();;
-  	char *buffer = NULL;
-   	int tamano, lenRes;
-   	FILE *file = fopen(filename, "r");
+	const char *filename = get_dialog_path_selection();
+	char *buffer = NULL;
+	if(filename){
+	   	int tamano, lenRes;
+	   	FILE *file = fopen(filename, "r");
 
-   	if (file)
-   	{
-       	fseek(file, 0, SEEK_END);//enceuntra ultimo byte del archivo
-       	tamano = ftell(file);//tamaño del inicio al fin
-       	rewind(file);//se pone al inicio del archivo				
+	   	if (file)
+	   	{
+	       	fseek(file, 0, SEEK_END);//enceuntra ultimo byte del archivo
+	       	tamano = ftell(file);//tamaño del inicio al fin
+	       	rewind(file);//se pone al inicio del archivo				
 
-       	buffer = (char*) malloc(sizeof(char) * (tamano + 1) );//crea el char* donde estara
-       	lenRes = fread(buffer, sizeof(char), tamano, file);//lee todo
-       	buffer[tamano] = '\0';//para que sea el fin del string
+	       	buffer = (char*) malloc(sizeof(char) * (tamano + 1) );//crea el char* donde estara
+	       	lenRes = fread(buffer, sizeof(char), tamano, file);//lee todo
+	       	buffer[tamano] = '\0';//para que sea el fin del string
 
-       	if (tamano != lenRes)//si son de distintos tamaños estamos mamando
-       	{
-           	free(buffer);
-           	buffer = NULL;
-       	}
-       fclose(file);
-    }
-    getRenglones(buffer);
-    return buffer;
+	       	if (tamano != lenRes)//si son de distintos tamaños estamos mamando
+	       	{
+	           	free(buffer);
+	           	buffer = NULL;
+	       	}
+	       fclose(file);
+	    }
+	    getRenglones(buffer);
+	    buff = buffer;
+	}
 }
 int powW(int a,int b) {return b==0?1:a*powW(a,--b);}
 
@@ -1030,6 +1045,30 @@ void add(int codigo1, int codigo2, int cuartoDato)
 		case 3:
 			BD = dx;
 			break;
+		case 4:
+			BD = al;
+			break;
+		case 5:
+			BD = bl;
+			break;
+		case 6:
+			BD = cl;
+			break;
+		case 7:
+			BD = dl;
+			break;
+		case 8:
+			BD = ah;
+			break;
+		case 9:
+			BD = bh;
+			break;
+		case 10:
+			BD = ch;
+			break;
+		case 11:
+			BD = dh;
+			break;
 		case 12:
 			BD  = cuartoDato;
 			MAR = BD;
@@ -1068,6 +1107,30 @@ void add(int codigo1, int codigo2, int cuartoDato)
 			break;
 		case 3:
 			BD = dx;
+			break;
+		case 4:
+			BD = al;
+			break;
+		case 5:
+			BD = bl;
+			break;
+		case 6:
+			BD = cl;
+			break;
+		case 7:
+			BD = dl;
+			break;
+		case 8:
+			BD = ah;
+			break;
+		case 9:
+			BD = bh;
+			break;
+		case 10:
+			BD = ch;
+			break;
+		case 11:
+			BD = dh;
 			break;
 		case 12:
 			BD  = cuartoDato;
@@ -1149,6 +1212,30 @@ void cmp(int codigo1, int codigo2, int cuartoDato)
 		case 3:
 			BD = dx;
 			break;
+		case 4:
+			BD = al;
+			break;
+		case 5:
+			BD = bl;
+			break;
+		case 6:
+			BD = cl;
+			break;
+		case 7:
+			BD = dl;
+			break;
+		case 8:
+			BD = ah;
+			break;
+		case 9:
+			BD = bh;
+			break;
+		case 10:
+			BD = ch;
+			break;
+		case 11:
+			BD = dh;
+			break;
 		case 12:
 			BD  = cuartoDato;
 			MAR = BD;
@@ -1186,6 +1273,30 @@ void cmp(int codigo1, int codigo2, int cuartoDato)
 			break;
 		case 3:
 			BD = dx;
+			break;
+		case 4:
+			BD = al;
+			break;
+		case 5:
+			BD = bl;
+			break;
+		case 6:
+			BD = cl;
+			break;
+		case 7:
+			BD = dl;
+			break;
+		case 8:
+			BD = ah;
+			break;
+		case 9:
+			BD = bh;
+			break;
+		case 10:
+			BD = ch;
+			break;
+		case 11:
+			BD = dh;
 			break;
 		case 12:
 			BD  = cuartoDato;
@@ -1264,8 +1375,6 @@ void MEM(int operacion)
 		memoria[MAR]-> operando1  =  0;
 		memoria[MAR]-> operando2  =  0;
 		memoria[MAR]-> cuartoDato = MBR;
-
-		printf("%s%i\n", "MAR=PC: ",MAR);
 	}
 }
 
@@ -1322,7 +1431,6 @@ void in(int a)
 }
 void out(int a)
 {
-	printf("%s%i\n","OUT",a );
 	switch(a)
 	{
 		case 0:
@@ -1365,7 +1473,6 @@ void out(int a)
 }
 void jz(int a)
 {
-	printf("%i\n",zeroF+100);
 	if(zeroF) PC = a - 1;
 }
 void jmp(int a)
@@ -1374,7 +1481,6 @@ void jmp(int a)
 }
 void cicloFetch() 
 {
-	printf("%i\n", PC);
 	//Subciclo busqueda
 	BD = PC;      //BD  <- ax
 	MAR = BD;     //B1 <- BD
@@ -1389,7 +1495,6 @@ void cicloFetch()
 	int parr2 = memoria[PC]->operando2;
 	int cuarr = memoria[PC]->cuartoDato;
 
-	//if(PC==11) printf("%i\n", inss);
 	switch(inss){
 		case 0:
 			mov(parr1,parr2,cuarr);
@@ -1407,7 +1512,6 @@ void cicloFetch()
 			jmp(cuarr);
 			break;
 		case 8:
-			printf("%s\n","hmmmmmmm" );
 			out(parr1);
 			break;
 		case 9:
