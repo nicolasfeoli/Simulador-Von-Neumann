@@ -35,6 +35,7 @@ void cicloFetch();
 void getRenglones();
 void clearBuffer();
 gchar* getTextBuffer();
+void concatBuffer();
 
 char*  programa;
 char* IR = "mov ax, 5", *buff = "";
@@ -52,20 +53,35 @@ static int B1 =0,B2=0,B3=0,B4=0;
 static int BD =0;
 static int MAR=0;
 static int MBR=0;
+int seg=0;
 
-GtkWidget *AXdec,*BXdec,*CXdec,*DXdec;
+GtkWidget *AXdec,*BXdec,*CXdec,*DXdec, *entrada,*btoPlay,*btoStep;
 GtkTextBuffer * gtkbuffer2;
 
 void play()
 {
-	int aaa;
+	
 
-	for(aaa=0;aaa<lineasPrograma;aaa++)
+	while(PC!=lineasPrograma-1){
+		if(memoria[PC]->codigoOp == 9){
+			gtk_widget_set_sensitive (btoPlay, FALSE);
+			gtk_widget_set_sensitive (btoStep, FALSE);
+			concatBuffer(gtkbuffer2, "Inserte el valor para el registro: ");
+			break;
+		}
 		cicloFetch();
+	}
 }
 void step()
 {
-	cicloFetch();
+	printf("%s\n","aa" );
+	if(memoria[PC]->codigoOp == 9){
+		gtk_widget_set_sensitive (btoPlay, FALSE);
+		gtk_widget_set_sensitive (btoStep, FALSE);
+		concatBuffer(gtkbuffer2, "Inserte el valor para el registro: ");		
+	}
+	else
+		cicloFetch();
 
 }
 void reset()
@@ -82,11 +98,12 @@ void reset()
 
 	IR = "";
 	buff = "";
-	PC = ah = al = ax = bh = bl = bx = ch = cl = cx = dh = dl = dx = zeroF = signF = interruptF = carryF = 0;
+	PC = ah = al = ax = bh = seg = bl = bx = ch = cl = cx = dh = dl = dx = zeroF = signF = interruptF = carryF = 0;
 	B1 = B2 = B3 = B4 = BD = MAR = MBR = 0;
 
 	clearBuffer(gtkbuffer2);
 }
+
 GtkWidget* createConsoleBox(GtkTextBuffer * gtkbuffer,char* b,int s)
 {
     gtk_text_buffer_set_text(gtkbuffer,b,s);
@@ -151,6 +168,13 @@ char* itoa(int num, char* str, int base)
     str[i] = '\0'; // le pone el final de str
     reverse(str);
     return str;
+}
+void onBtoListoClicked()
+{
+	gtk_widget_set_sensitive (btoPlay, TRUE);
+	gtk_widget_set_sensitive (btoStep, TRUE);
+	cicloFetch();
+	gtk_entry_set_text(GTK_ENTRY(entrada),"");
 }
 void ventanaError(int pp,char*err)
 {
@@ -263,7 +287,7 @@ void excInstruccion(char reg[],int programCounter)
 	}
 	if(band)   // parametro 1
 	{
-		if(par1[0]>=0x30 && par1[0]<=0x39)
+		if((par1[0]>=0x30 && par1[0]<=0x39)||par1[0]=='-')
 		{
 			if(instruccion == 7 || instruccion == 6){
 				cuartoDato = atoi(par1);
@@ -382,7 +406,7 @@ void excInstruccion(char reg[],int programCounter)
 	}
 	if(band)//parametro 2
 	{
-		if(par2[0]>=0x30 && par2[0]<=0x39 )
+		if((par2[0]>=0x30 && par2[0]<=0x39 )||par2[0]=='-')
 		{
 			if(instruccion >= 0 && instruccion <= 5){
 				cuartoDato = atoi(par2);
@@ -1458,43 +1482,58 @@ void sti(void)
 }
 void in(int a)/*ver*/
 {
+	char*aaaa= gtk_entry_get_text(GTK_ENTRY(entrada));
+	int num = atoi(aaaa);
+
 	switch(a)
 	{
 		case 0:
-			scanf("%i",&ax);
+			mov(0,15,num);
+			concatBuffer(gtkbuffer2,g_strconcat("ax: ",aaaa,NULL));
 			break;
 		case 1:
-			scanf("%i",&bx);
+			concatBuffer(gtkbuffer2,g_strconcat("bx: ",aaaa,NULL));
+			mov(1,15,num);
 			break;
 		case 2:
-			scanf("%i",&cx);	
+			concatBuffer(gtkbuffer2,g_strconcat("cx: ",aaaa,NULL));
+			mov(2,15,num);	
 			break;
 		case 3:
-			scanf("%i",&dx);
+			concatBuffer(gtkbuffer2,g_strconcat("dx: ",aaaa,NULL));
+			mov(3,15,num);
 			break;
 		case 4:
-			scanf("%i",&al);
+			concatBuffer(gtkbuffer2,g_strconcat("al: ",aaaa,NULL));
+			mov(4,15,num);
 			break;
 		case 5:
-			scanf("%i",&bl);
+			concatBuffer(gtkbuffer2,g_strconcat("bl: ",aaaa,NULL));
+			mov(5,15,num);
 			break;
 		case 6:
-			scanf("%i",&cl);
+			concatBuffer(gtkbuffer2,g_strconcat("cl: ",aaaa,NULL));
+			mov(6,15,num);
 			break;
 		case 7:
-			scanf("%i",&dl);
+			concatBuffer(gtkbuffer2,g_strconcat("dl: ",aaaa,NULL));
+			mov(7,15,num);
 			break;
 		case 8:
-			scanf("%i",&ah);
+			concatBuffer(gtkbuffer2,g_strconcat("ah: ",aaaa,NULL));
+			mov(8,15,num);
 			break;
 		case 9:
-			scanf("%i",&bh);
+			concatBuffer(gtkbuffer2,g_strconcat("bh: ",aaaa,NULL));
+			mov(9,15,num);
 			break;
 		case 10:
-			scanf("%i",&ch);
+			concatBuffer(gtkbuffer2,g_strconcat("ch: ",aaaa,NULL));
+			mov(10,15,num);
 			break;
 		case 11:
-			scanf("%i",&dh);
+			concatBuffer(gtkbuffer2,g_strconcat("dh: ",aaaa,NULL));
+			mov(11,15,num);
 			break;
 	}
 }
@@ -1551,6 +1590,7 @@ void jmp(int a)
 }
 void cicloFetch() 
 {
+	printf("%i\n",PC );
 	IR = prog[PC];
 	//Subciclo busqueda
 	BD = PC;      //BD  <- ax

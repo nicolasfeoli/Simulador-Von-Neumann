@@ -1,7 +1,7 @@
 mov bx,8	;ah = 8
 mov ax,9	;al = 9
-mov dx, 3
-mov cx, 46
+mov dx, -3
+in cx
 out bx
 out ax
 out dx
