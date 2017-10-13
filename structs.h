@@ -1628,3 +1628,86 @@ void actualizarRegistro(char a)
 			break;
 	}
 }
+
+void guardarAFOC(void)
+{
+	int arreglo[27];
+
+	FILE *archivito = fopen("afoc", "wb");
+	printf("GUARDANDO AFOC\n");
+
+	arreglo[0]  = size;
+	arreglo[1]  = lineasPrograma;
+	arreglo[2]  = IR_fetch;
+	arreglo[3]  = PC;
+	arreglo[4]  = ah;
+	arreglo[5]  = al;
+	arreglo[6]  = ax;
+	arreglo[7]  = bh;
+	arreglo[8]  = bl;
+	arreglo[9]  = bx;
+	arreglo[10] = ch;
+	arreglo[11] = cl;
+	arreglo[12] = cx;
+	arreglo[13] = dh;
+	arreglo[14] = dl;
+	arreglo[15] = dx;
+	arreglo[16] = zeroF;
+	arreglo[17] = signF;
+	arreglo[18] = interruptF;
+	arreglo[19] = carryF;
+	arreglo[20] = B1;
+	arreglo[21] = B2;
+	arreglo[22] = B3;
+	arreglo[23] = B4;
+	arreglo[24] = BD;
+	arreglo[25] = MAR;
+	arreglo[26] = MBR;
+	int i;
+	for(i = 0; i<27; i++)
+    	printf("%x ", arreglo[i]);
+	fwrite(arreglo, sizeof(int), 27, archivito);
+	fclose(archivito);
+
+}
+
+void cargarAFOC(void)
+{
+	int arreglo[27];
+	FILE *archivito = fopen("afoc", "rb");
+	fread(arreglo,sizeof(int),27,archivito);
+	fclose(archivito);
+
+	printf("\nCARGANDO AFOC\n");
+
+	size            = arreglo[0];
+	lineasPrograma  = arreglo[1];
+	IR_fetch        = arreglo[2];
+	PC              = arreglo[3];
+	ah              = arreglo[4];
+	al              = arreglo[5];
+	ax              = arreglo[6];
+	bh              = arreglo[7];
+	bl              = arreglo[8];
+	bx              = arreglo[9];
+	ch              = arreglo[10];
+	cl              = arreglo[11];
+	cx              = arreglo[12];
+	dh              = arreglo[13];
+	dl              = arreglo[14];
+	dx              = arreglo[15];
+	zeroF           = arreglo[16];
+	signF           = arreglo[17];
+	interruptF      = arreglo[18];
+	carryF          = arreglo[19];
+	B1              = arreglo[20];
+	B2              = arreglo[21];
+	B3              = arreglo[22];
+	B4              = arreglo[23];
+	BD              = arreglo[24];
+	MAR             = arreglo[25];
+	MBR             = arreglo[26];
+	int i;
+	for(i = 0; i<27; i++)
+    	printf("%x ", arreglo[i]);
+}
