@@ -32,10 +32,14 @@ celda* memoria[256];
 int i;
 
 void cicloFetch();
+void getRenglones();
+void clearBuffer();
+gchar* getTextBuffer();
 
-char* IR = "mov ax, 5", *buff = "   ";
+char*  programa;
+char* IR = "mov ax, 5", *buff = "";
 int size = 0, lineasPrograma = 0;
-celda* IR_fetch;
+int IR_fetch;
 static int PC = 0,
 	ah,al,ax  = 0,
 	bh,bl,bx  = 0,
@@ -52,11 +56,39 @@ static int MBR=0;
 GtkWidget *AXdec,*BXdec,*CXdec,*DXdec;
 GtkTextBuffer * gtkbuffer2;
 
+void play()
+{
+	int aaa;
+
+	for(aaa=0;aaa<lineasPrograma;aaa++)
+		cicloFetch();
+}
+void step()
+{
+	cicloFetch();
+
+}
+void reset()
+{
+	int tp = 0;
+	for(;tp<256;tp++)
+	{
+		memoria[tp]->codigoOp = memoria[tp]->operando1 = memoria[tp]->operando2 = memoria[tp]->cuartoDato = 0;
+	}
+
+	getRenglones(programa);
+
+	i = 0;
+
+	IR = "";
+	buff = "";
+	PC = ah = al = ax = bh = bl = bx = ch = cl = cx = dh = dl = dx = zeroF = signF = interruptF = carryF = 0;
+	B1 = B2 = B3 = B4 = BD = MAR = MBR = 0;
+
+	clearBuffer(gtkbuffer2);
+}
 GtkWidget* createConsoleBox(GtkTextBuffer * gtkbuffer,char* b,int s)
 {
-
-    printf("%i\n", s);
-    
     gtk_text_buffer_set_text(gtkbuffer,b,s);
     GtkWidget* textArea = gtk_text_view_new_with_buffer(gtkbuffer);
     GtkWidget* scrolledwindow = gtk_scrolled_window_new(NULL, NULL);
@@ -74,6 +106,10 @@ gchar* getTextBuffer(GtkTextBuffer* gtkbuffer){
     gtk_text_buffer_get_bounds (gtkbuffer, &start, &end);
     text = gtk_text_buffer_get_text (gtkbuffer, &start, &end, FALSE);
     return text;
+}
+void clearBuffer(GtkTextBuffer * gtkbf)
+{
+	gtk_text_buffer_set_text(gtkbf," ",0);
 }
 void concatBuffer(GtkTextBuffer * gtkbf,gchar* str)
 {
@@ -149,7 +185,7 @@ void excInstruccion(char reg[],int programCounter)
 	memset(&ins[0], 0, sizeof(ins));
 	memset(&par1[0], 0, sizeof(par1));
 	memset(&par2[0], 0, sizeof(par2));
-	int index=0, i, tipo = 1, instruccion = 0 ,parametro1 = 0, parametro2 = 0, cuartoDato = 0, band = 1;
+	int index=0, i, tipo = 1, instruccion = -1 ,parametro1 = -1, parametro2 = -1, cuartoDato = -1, band = 1;
 	for(i = 0;i<(int)strlen(reg);i++)
 	{
 		switch(tipo)
@@ -478,6 +514,7 @@ void excInstruccion(char reg[],int programCounter)
 void getRenglones(char* text)
 {
 	int i = 0,index = 0,comment = 0;;
+	PC=0;
 	while(text[i]!='\0')
 	{
 		if(text[i]=='\n')
@@ -540,7 +577,6 @@ void abrirArchivo(GtkButton* button, gpointer func_data)
 	       	fseek(file, 0, SEEK_END);//enceuntra ultimo byte del archivo
 	       	tamano = ftell(file);//tamaño del inicio al fin
 	       	rewind(file);//se pone al inicio del archivo				
-	       	printf("%i\n", tamano);
 	       	buffer = (char*) malloc(sizeof(char) * (tamano + 1) );//crea el char* donde estara
 	       	lenRes = fread(buffer, sizeof(char), tamano, file);//lee todo
 	       	buffer[tamano] = '\0';//para que sea el fin del string
@@ -552,6 +588,7 @@ void abrirArchivo(GtkButton* button, gpointer func_data)
 	       	}
 	       fclose(file);
 	    }
+	    programa = buffer;
 	    getRenglones(buffer);
 	    buff = buffer;
 	    size = tamano;
@@ -617,10 +654,7 @@ static void ventanaIR()
   	gtk_window_set_resizable (GTK_WINDOW(window), FALSE);
   	gtk_widget_show_all(window);
 
-  	int aaa;
 
-	for(aaa=0;aaa<lineasPrograma;aaa++)
-		cicloFetch();
 }
 static void ventanaPC()
 {
@@ -1385,13 +1419,14 @@ void test(int flag, int salto)
 
 void inMicro()
 {
-	printf("Microinstruccion in. Dato entrada: ");
+	printf("Microinstruccion in. Dato entrada: ");/*ver*/
 	scanf("%d", &MBR);
 }
 
 void outMicro()
 {
-	printf("Microinstruccion out. Dato salida: %d\n", MBR);
+	char temp[5];
+	concatBuffer(gtkbuffer2,g_strconcat("Dato salida MBR: ",itoa(MBR,temp,10),NULL));
 }
 
 //Esta Microinstruccion escribe en [MAR] lo que esta en MBR
@@ -1421,7 +1456,7 @@ void sti(void)
 {
 	interruptF = 1;
 }
-void in(int a)
+void in(int a)/*ver*/
 {
 	switch(a)
 	{
@@ -1469,41 +1504,40 @@ void out(int a)
 	switch(a)
 	{
 		case 0:
-			printf("%i\n",ax);
+			concatBuffer(gtkbuffer2,g_strconcat("Salida registro ax: ",itoa(ax,temp,10),NULL));
 			break;
 		case 1:
-			printf("%i\n",bx);
+			concatBuffer(gtkbuffer2,g_strconcat("Salida registro bx: ",itoa(bx,temp,10),NULL));
 			break;
 		case 2:
-			concatBuffer(gtkbuffer2,itoa(cx,temp,10));
-			printf("%i\n",cx);	
+			concatBuffer(gtkbuffer2,g_strconcat("Salida registro cx: ",itoa(cx,temp,10),NULL));
 			break;
 		case 3:
-			printf("%i\n",dx);
+			concatBuffer(gtkbuffer2,g_strconcat("Salida registro dx: ",itoa(dx,temp,10),NULL));
 			break;
 		case 4:
-			printf("%i\n",al);
+			concatBuffer(gtkbuffer2,g_strconcat("Salida registro al: ",itoa(al,temp,10),NULL));
 			break;
 		case 5:
-			printf("%i\n",bl);
+			concatBuffer(gtkbuffer2,g_strconcat("Salida registro bl: ",itoa(bl,temp,10),NULL));
 			break;
 		case 6:
-			printf("%i\n",cl);
+			concatBuffer(gtkbuffer2,g_strconcat("Salida registro cl: ",itoa(cl,temp,10),NULL));
 			break;
 		case 7:
-			printf("%i\n",dl);
+			concatBuffer(gtkbuffer2,g_strconcat("Salida registro dl: ",itoa(dl,temp,10),NULL));
 			break;
 		case 8:
-			printf("%i\n",ah);
+			concatBuffer(gtkbuffer2,g_strconcat("Salida registro ah: ",itoa(ah,temp,10),NULL));
 			break;
 		case 9:
-			printf("%i\n",bh);
+			concatBuffer(gtkbuffer2,g_strconcat("Salida registro bh: ",itoa(bh,temp,10),NULL));
 			break;
 		case 10:
-			printf("%i\n",ch);
+			concatBuffer(gtkbuffer2,g_strconcat("Salida registro ch: ",itoa(ch,temp,10),NULL));
 			break;
 		case 11:
-			printf("%i\n",dh);
+			concatBuffer(gtkbuffer2,g_strconcat("Salida registro dh: ",itoa(dh,temp,10),NULL));
 			break;
 	}
 }
@@ -1517,12 +1551,13 @@ void jmp(int a)
 }
 void cicloFetch() 
 {
+	IR = prog[PC];
 	//Subciclo busqueda
 	BD = PC;      //BD  <- ax
 	MAR = BD;     //B1 <- BD
 	MEM(LECTURA); //sum
 	BD = MBR;     //BD  <- MBR
-	IR = BD;      //IR  <- BD
+	IR_fetch = BD;      //IR  <- BD
 
 	//Subciclo de Decodificacion
 	//Aqui no va nada porque en teoria ya lo tenemos 

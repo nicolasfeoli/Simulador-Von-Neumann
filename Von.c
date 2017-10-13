@@ -11,18 +11,15 @@
 /* 
       cc `pkg-config --cflags gtk+-3.0` Von.c -o Von `pkg-config --libs gtk+-3.0`
 */
-
 static void ventanaSimulador()
 {
-  GtkWidget *txtCode,*p,*consola,*dialog,*label,*grid,*btoUC,*btoIR,*btoPC,*btoBD,*btoRT,*btoFlag,*btoALU,*btoMAR,*btoMBR;
+  GtkWidget *btoPlay,*btoStep,*btoReset,*txtCode,*p,*consola,*dialog,*label,*grid,*btoUC,*btoIR,*btoPC,*btoBD,*btoRT,*btoFlag,*btoALU,*btoMAR,*btoMBR;
   
   GtkTextBuffer * gtkbuffer = gtk_text_buffer_new(NULL);
   gtkbuffer2 = gtk_text_buffer_new(NULL);
 
   p=createConsoleBox(gtkbuffer,buff,size);
   consola= createConsoleBox(gtkbuffer2,"",0);
-
-  concatBuffer(gtkbuffer2,"soy juande xD") ; 
 
   dialog = gtk_window_new(GTK_WINDOW_TOPLEVEL);
   
@@ -37,20 +34,26 @@ static void ventanaSimulador()
   btoALU = gtk_button_new_with_label("ALU");
   btoMAR = gtk_button_new_with_label("MAR");
   btoMBR = gtk_button_new_with_label("MBR");
+  btoPlay = gtk_button_new_with_label("Play");
+  btoStep = gtk_button_new_with_label("Step");
+  btoReset = gtk_button_new_with_label("Reset");
 
   gtk_container_add(GTK_CONTAINER(dialog),grid);
   gtk_grid_attach(GTK_GRID(grid),label,1,0,4,1);//COL,FILA,COL,FILA
   gtk_grid_attach(GTK_GRID(grid),btoUC,1,3,1,1);
   gtk_grid_attach(GTK_GRID(grid),btoIR,1,1,1,2);
   gtk_grid_attach(GTK_GRID(grid),btoPC,1,4,1,1);
-  gtk_grid_attach(GTK_GRID(grid),btoBD,2,1,1,5);
+  gtk_grid_attach(GTK_GRID(grid),btoBD,2,1,1,4);
   gtk_grid_attach(GTK_GRID(grid),btoRT,3,1,2,1);
   gtk_grid_attach(GTK_GRID(grid),btoFlag,3,2,2,1);
   gtk_grid_attach(GTK_GRID(grid),btoALU,3,3,2,1);
   gtk_grid_attach(GTK_GRID(grid),btoMAR,3,4,1,1);
   gtk_grid_attach(GTK_GRID(grid),btoMBR,4,4,1,1);
-  gtk_grid_attach(GTK_GRID(grid),p,5,1,1,4);
-  gtk_grid_attach(GTK_GRID(grid),consola,0,1,1,4);
+  gtk_grid_attach(GTK_GRID(grid),p,5,1,1,5);
+  gtk_grid_attach(GTK_GRID(grid),consola,0,1,1,5);
+  gtk_grid_attach(GTK_GRID(grid),btoPlay,1,5,1,1);
+  gtk_grid_attach(GTK_GRID(grid),btoStep,2,5,1,1);
+  gtk_grid_attach(GTK_GRID(grid),btoReset,3,5,2,1);
   gtk_widget_set_size_request(btoUC,50,100);
   gtk_widget_set_size_request(p,250,100);
   gtk_widget_set_size_request(consola,250,100);
@@ -66,7 +69,9 @@ static void ventanaSimulador()
   g_signal_connect(btoPC,"clicked",G_CALLBACK(ventanaPC),dialog);
   g_signal_connect(btoRT,"clicked",G_CALLBACK(ventanaRT),dialog);
   g_signal_connect(btoFlag,"clicked",G_CALLBACK(ventanaFlags),dialog);
-  g_signal_connect(btoALU,"clicked",G_CALLBACK(ventanaALU),dialog);
+  g_signal_connect(btoPlay,"clicked",G_CALLBACK(play),NULL);
+  g_signal_connect(btoStep,"clicked",G_CALLBACK(step),NULL);
+  g_signal_connect(btoReset,"clicked",G_CALLBACK(reset),NULL);
 
   gtk_widget_set_sensitive (btoUC, FALSE);
   gtk_widget_set_sensitive (btoBD, FALSE);
