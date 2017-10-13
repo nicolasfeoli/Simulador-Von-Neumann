@@ -1607,17 +1607,24 @@ void cicloFetch()
 
 	PC++;          //inc PC
 }
-/*
-void actualizarRegistro(char entero)
+
+void actualizarRegistro(char a)
 {
-	//si el registro que cambio es entero -> entero = 1
-	if(entero)
+	//a es el registro que cambio
+	switch(a)
 	{
-
-	}
-	else 
-	{
-
+		case 'x':
+			ah = getRThigh(ax);
+			al = getRTlow (ax);
+			break;
+		case 'h':
+			ah = ah * 256;
+			ax = ax & 0x00FF;
+			ax = ax | ah;
+			break;
+		case 'l':
+			ax = ax & 0xFF00;
+			ax = ax | al;
+			break;
 	}
 }
-*/
