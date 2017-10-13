@@ -18,6 +18,8 @@ typedef struct {
 static char prog[256][500];
 
 celda* memoria[256];
+celda  arregloMemoriaArchivo[256];
+
 
 //FUENTE8  FUENTE16
 //DESTINO8 DESTINO16
@@ -37,6 +39,7 @@ void clearBuffer();
 gchar* getTextBuffer();
 
 char*  programa;
+int globalTamano = 0;
 char* IR = "mov ax, 5", *buff = "";
 int size = 0, lineasPrograma = 0;
 int IR_fetch;
@@ -575,7 +578,7 @@ void abrirArchivo(GtkButton* button, gpointer func_data)
 	   	if (file)
 	   	{
 	       	fseek(file, 0, SEEK_END);//enceuntra ultimo byte del archivo
-	       	tamano = ftell(file);//tamaño del inicio al fin
+	       	globalTamano = tamano = ftell(file);//tamaño del inicio al fin
 	       	rewind(file);//se pone al inicio del archivo				
 	       	buffer = (char*) malloc(sizeof(char) * (tamano + 1) );//crea el char* donde estara
 	       	lenRes = fread(buffer, sizeof(char), tamano, file);//lee todo
@@ -1667,6 +1670,12 @@ void guardarAFOC(void)
 	for(i = 0; i<27; i++)
     	printf("%x ", arreglo[i]);
 	fwrite(arreglo, sizeof(int), 27, archivito);
+
+	fwrite(programa, sizeof(char), globalTamano,archivito);
+
+	for(i = 0; i < 256; i++)
+		fwrite(*memoria[i], sizeof(celda), 1, archivito);
+
 	fclose(archivito);
 
 }
@@ -1674,40 +1683,50 @@ void guardarAFOC(void)
 void cargarAFOC(void)
 {
 	int arreglo[27];
+
 	FILE *archivito = fopen("afoc", "rb");
-	fread(arreglo,sizeof(int),27,archivito);
-	fclose(archivito);
+	if (archivito != NULL)
+	{
+		fread(arreglo,sizeof(int),27,archivito);
+		fread(programa, sizeof(char), globalTamano, archivito);
+		fread(arregloMemoriaArchivo, sizeof(celda),256,archivito);
 
-	printf("\nCARGANDO AFOC\n");
+		fclose(archivito);
 
-	size            = arreglo[0];
-	lineasPrograma  = arreglo[1];
-	IR_fetch        = arreglo[2];
-	PC              = arreglo[3];
-	ah              = arreglo[4];
-	al              = arreglo[5];
-	ax              = arreglo[6];
-	bh              = arreglo[7];
-	bl              = arreglo[8];
-	bx              = arreglo[9];
-	ch              = arreglo[10];
-	cl              = arreglo[11];
-	cx              = arreglo[12];
-	dh              = arreglo[13];
-	dl              = arreglo[14];
-	dx              = arreglo[15];
-	zeroF           = arreglo[16];
-	signF           = arreglo[17];
-	interruptF      = arreglo[18];
-	carryF          = arreglo[19];
-	B1              = arreglo[20];
-	B2              = arreglo[21];
-	B3              = arreglo[22];
-	B4              = arreglo[23];
-	BD              = arreglo[24];
-	MAR             = arreglo[25];
-	MBR             = arreglo[26];
-	int i;
-	for(i = 0; i<27; i++)
-    	printf("%x ", arreglo[i]);
+		printf("\nCARGANDO AFOC\n");
+
+		size            = arreglo[0];
+		lineasPrograma  = arreglo[1];
+		IR_fetch        = arreglo[2];
+		PC              = arreglo[3];
+		ah              = arreglo[4];
+		al              = arreglo[5];
+		ax              = arreglo[6];
+		bh              = arreglo[7];
+		bl              = arreglo[8];
+		bx              = arreglo[9];
+		ch              = arreglo[10];
+		cl              = arreglo[11];
+		cx              = arreglo[12];
+		dh              = arreglo[13];
+		dl              = arreglo[14];
+		dx              = arreglo[15];
+		zeroF           = arreglo[16];
+		signF           = arreglo[17];
+		interruptF      = arreglo[18];
+		carryF          = arreglo[19];
+		B1              = arreglo[20];
+		B2              = arreglo[21];
+		B3              = arreglo[22];
+		B4              = arreglo[23];
+		BD              = arreglo[24];
+		MAR             = arreglo[25];
+		MBR             = arreglo[26];
+		int i;
+		for(i = 0; i<27; i++)
+	    	printf("%x ", arreglo[i]);
+
+	    for(i = 0; i<256; i++)
+	    	memoria[i] = &(arregloMemoriaArchivo[i]);
+	}
 }
