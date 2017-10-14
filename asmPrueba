@@ -1,16 +1,3 @@
-mov bx,8	;ah = 8
-mov ax,9	;al = 9
-mov dx, -3
-in cx
-out bx
-out ax
-out dx
-out cx
-;jmp 6
-;add cx, 14
-;cmp ah,al
-;jz 2
-;mov bh, 20
-;mov [bh], 5
-;add [bh], 17
-;out cx
+mov ax, 257
+out al
+out ah

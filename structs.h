@@ -38,10 +38,12 @@ void getRenglones();
 void clearBuffer();
 gchar* getTextBuffer();
 void concatBuffer();
+void actualizarRegistroX();
+void actualizarRegistroLH();
 
 char*  programa;
 int globalTamano = 0;
-char* IR = "mov ax, 5", *buff = "";
+char* IR = "", *buff = "";
 int size = 0, lineasPrograma = 0;
 int IR_fetch;
 static int PC = 0,
@@ -65,7 +67,7 @@ void play()
 {
 	
 
-	while(PC!=lineasPrograma-1){
+	while(PC!=lineasPrograma){
 		if(memoria[PC]->codigoOp == 9){
 			gtk_widget_set_sensitive (btoPlay, FALSE);
 			gtk_widget_set_sensitive (btoStep, FALSE);
@@ -652,6 +654,10 @@ void actualizarRT(int a,int b,int c, int d)
 	bx=b%65535;
 	cx=c%65535;
 	dx=d%65535;
+	actualizarRegistroLH(0);
+	actualizarRegistroLH(1);
+	actualizarRegistroLH(2);
+	actualizarRegistroLH(3);
 }
 
 void onBtoCnlClicked(GtkButton* button, gpointer func_data)
@@ -839,7 +845,7 @@ static void ventanaALU()
 	lblB2 = gtk_label_new("B2   ->");
 	lblB3 = gtk_label_new("B3   ->");
 	lblB4 = gtk_label_new("B4   ->");
-	char t1[2],t2[2],t3[2],t4[2];
+	char t1[5],t2[5],t3[5],t4[5];
 	lB1 = gtk_label_new(itoa(B1,t1,10));
 	lB2 = gtk_label_new(itoa(B2,t2,10));
 	lB3 = gtk_label_new(itoa(B3,t3,10));
@@ -1044,39 +1050,51 @@ void mov (int codigo1, int codigo2, int cuartoDato)
 	switch(codigo1){
 		case 0:
 			ax = BD;
+			actualizarRegistroLH(0);
 			break;
 		case 1:
 			bx = BD;
+			actualizarRegistroLH(1);
 			break;
 		case 2:
 			cx = BD;
+			actualizarRegistroLH(2);
 			break;
 		case 3:
 			dx = BD;
+			actualizarRegistroLH(3);
 			break;
 		case 4:
 			al = BD;
+			actualizarRegistroX(0);
 			break;
 		case 5:
 			bl = BD;
+			actualizarRegistroX(1);
 			break;
 		case 6:
 			cl = BD;
+			actualizarRegistroX(2);
 			break;
 		case 7:
 			dl = BD;
+			actualizarRegistroX(3);
 			break;
 		case 8:
 			ah = BD;
+			actualizarRegistroX(0);
 			break;
 		case 9:
 			bh = BD;
+			actualizarRegistroX(1);
 			break;
 		case 10:
 			ch = BD;
+			actualizarRegistroX(2);
 			break;
 		case 11:
 			dh = BD;
+			actualizarRegistroX(3);
 			break;
 		case 12:
 			MBR = BD;
@@ -1258,15 +1276,51 @@ void add(int codigo1, int codigo2, int cuartoDato)
 	switch(codigo1){
 		case 0:
 			ax = BD;
+			actualizarRegistroLH(0);
 			break;
 		case 1:
 			bx = BD;
+			actualizarRegistroLH(1);
 			break;
 		case 2:
 			cx = BD;
+			actualizarRegistroLH(2);
 			break;
 		case 3:
 			dx = BD;
+			actualizarRegistroLH(3);
+			break;
+		case 4:
+			al = BD;
+			actualizarRegistroX(0);
+			break;
+		case 5:
+			bl = BD;
+			actualizarRegistroX(1);
+			break;
+		case 6:
+			cl = BD;
+			actualizarRegistroX(2);
+			break;
+		case 7:
+			dl = BD;
+			actualizarRegistroX(3);
+			break;
+		case 8:
+			ah = BD;
+			actualizarRegistroX(0);
+			break;
+		case 9:
+			bh = BD;
+			actualizarRegistroX(1);
+			break;
+		case 10:
+			ch = BD;
+			actualizarRegistroX(2);
+			break;
+		case 11:
+			dh = BD;
+			actualizarRegistroX(3);
 			break;
 		case 12:
 			MBR = BD;
@@ -1651,27 +1705,48 @@ void cicloFetch()
 	PC++;          //inc PC
 }
 
-void actualizarRegistro(char a)
+void actualizarRegistroX(int a)
 {
 	//a es el registro que cambio
 	switch(a)
 	{
-		case 'x':
-			ah = getRThigh(ax);
-			al = getRTlow (ax);
+		case 0:
+			ax = ah*256 + al;
 			break;
-		case 'h':
-			ah = ah * 256;
-			ax = ax & 0x00FF;
-			ax = ax | ah;
+		case 1:
+			bx = bh*256 + bl;
 			break;
-		case 'l':
-			ax = ax & 0xFF00;
-			ax = ax | al;
+		case 2:
+			cx = ch*256 + cl;
+			break;
+		case 3:
+			dx = dh*256 + dl;
 			break;
 	}
 }
-
+void actualizarRegistroLH(int a)
+{
+	//a es el registro que cambio
+	switch(a)
+	{
+		case 0:
+			ah = getRThigh(ax);
+			al = getRTlow (ax);
+			break;
+		case 1:
+			bh = getRThigh(bx);
+			bl = getRTlow (bx);
+			break;
+		case 2:
+			ch = getRThigh(cx);
+			cl = getRTlow (cx);
+			break;
+		case 3:
+			dh = getRThigh(dx);
+			dl = getRTlow (dx);
+			break;
+	}
+}/*
 void guardarAFOC(void)
 {
 	int arreglo[27];
@@ -1769,4 +1844,4 @@ void cargarAFOC(void)
 	    for(i = 0; i<256; i++)
 	    	memoria[i] = &(arregloMemoriaArchivo[i]);
 	}
-}
+}*/
