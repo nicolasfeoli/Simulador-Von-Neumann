@@ -13,7 +13,7 @@
 */
 static void ventanaSimulador()
 {
-  GtkWidget *btoListo,*btoReset,*txtCode,*p,*consola,*dialog,*label,*grid,*btoUC,*btoIR,*btoPC,*btoBD,*btoRT,*btoFlag,*btoALU,*btoMAR,*btoMBR;
+  GtkWidget *btoListo,*btoCargar,*btoGuardar,*btoReset,*txtCode,*p,*consola,*dialog,*label,*grid,*btoUC,*btoIR,*btoPC,*btoBD,*btoRT,*btoFlag,*btoALU,*btoMAR,*btoMBR;
   
   GtkTextBuffer * gtkbuffer = gtk_text_buffer_new(NULL);
   gtkbuffer2 = gtk_text_buffer_new(NULL);
@@ -38,6 +38,8 @@ static void ventanaSimulador()
   btoStep = gtk_button_new_with_label("Step");
   btoReset = gtk_button_new_with_label("Reset");
   btoListo = gtk_button_new_with_label("Ok");
+  btoGuardar =  gtk_button_new_with_label("Guardar");
+  btoCargar =  gtk_button_new_with_label("Cargar");
   entrada = gtk_entry_new();
 
 
@@ -52,8 +54,10 @@ static void ventanaSimulador()
   gtk_grid_attach(GTK_GRID(grid),btoALU,4,3,2,1);
   gtk_grid_attach(GTK_GRID(grid),btoMAR,4,4,1,1);
   gtk_grid_attach(GTK_GRID(grid),btoMBR,5,4,1,1);
-  gtk_grid_attach(GTK_GRID(grid),p,6,1,1,5);
+  gtk_grid_attach(GTK_GRID(grid),p,6,1,2,4);
   gtk_grid_attach(GTK_GRID(grid),consola,0,1,2,4);
+  gtk_grid_attach(GTK_GRID(grid),btoCargar,6,5,1,1);
+  gtk_grid_attach(GTK_GRID(grid),btoGuardar,7,5,1,1);
   gtk_grid_attach(GTK_GRID(grid),btoPlay,2,5,1,1);
   gtk_grid_attach(GTK_GRID(grid),btoStep,3,5,1,1);
   gtk_grid_attach(GTK_GRID(grid),btoReset,4,5,2,1);
@@ -78,9 +82,13 @@ static void ventanaSimulador()
   g_signal_connect(btoStep,"clicked",G_CALLBACK(step),NULL);
   g_signal_connect(btoReset,"clicked",G_CALLBACK(reset),NULL);
   g_signal_connect(btoListo,"clicked",G_CALLBACK(onBtoListoClicked),NULL);
+  g_signal_connect(btoCargar,"clicked",G_CALLBACK(cargarAFOC),NULL);
+  g_signal_connect(btoGuardar,"clicked",G_CALLBACK(guardarAFOC),NULL);
 
   gtk_widget_set_sensitive (btoUC, FALSE);
   gtk_widget_set_sensitive (btoBD, FALSE);
+  gtk_widget_set_sensitive (p, FALSE);
+  gtk_widget_set_sensitive (consola, FALSE);
   gtk_window_set_title (GTK_WINDOW(dialog), "Simulador");
   gtk_window_set_resizable (GTK_WINDOW(dialog), TRUE);
   gtk_widget_show_all(dialog);

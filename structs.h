@@ -1738,9 +1738,9 @@ void actualizarRegistroLH(int a)
 }
 void guardarAFOC(void)
 {
-	int arreglo[27];
+	int arreglo[28];
 
-	FILE *archivito = fopen("afoc", "wb");
+	FILE *archivito = fopen("AFOC", "wb");
 
 	arreglo[0]  = size;
 	arreglo[1]  = lineasPrograma;
@@ -1769,8 +1769,10 @@ void guardarAFOC(void)
 	arreglo[24] = BD;
 	arreglo[25] = MAR;
 	arreglo[26] = MBR;
+	arreglo[27] = globalTamano;
 	int i;
-	fwrite(arreglo, sizeof(int), 27, archivito);
+	printf("%i\n", arreglo[27]);
+	fwrite(arreglo, sizeof(int), 28, archivito);
 
 	fwrite(programa, sizeof(char), globalTamano,archivito);
 
@@ -1783,18 +1785,17 @@ void guardarAFOC(void)
 
 void cargarAFOC(void)
 {
-	int arreglo[27];
+	printf("%s\n", "aaaaa");
+	int arreglo[28];
+	printf("%s\n","aa");
 
-	FILE *archivito = fopen("afoc", "rb");
+	FILE *archivito = fopen("AFOC", "rb");
+	printf("%s\n","a1");
 	if (archivito != NULL)
 	{
-		fread(arreglo,sizeof(int),27,archivito);
-		fread(programa, sizeof(char), globalTamano, archivito);
-		fread(arregloMemoriaArchivo, sizeof(celda),256,archivito);
-
-		fclose(archivito);
-
-
+		printf("%s\n","a2");
+		fread(arreglo,sizeof(int),28,archivito);
+		printf("%s\n","a3");
 		size            = arreglo[0];
 		lineasPrograma  = arreglo[1];
 		IR_fetch        = arreglo[2];
@@ -1822,9 +1823,22 @@ void cargarAFOC(void)
 		BD              = arreglo[24];
 		MAR             = arreglo[25];
 		MBR             = arreglo[26];
-		int i;
+		globalTamano    = arreglo[27];
+		printf("%s\n","a4");
+		printf("%i\n", globalTamano);
 
+		fread(programa, sizeof(char), globalTamano, archivito);
+		printf("%s\n","a5");
+		fread(arregloMemoriaArchivo, sizeof(celda),256,archivito);
+		printf("%s\n","a6");
+		fclose(archivito);
+
+		printf("%s\n", programa);
+
+		int i;
+		printf("%s\n","a7");
 	    for(i = 0; i<256; i++)
 	    	memoria[i] = &(arregloMemoriaArchivo[i]);
+	    printf("%s\n","a8");
 	}
 }
