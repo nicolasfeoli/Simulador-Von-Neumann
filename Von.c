@@ -4,7 +4,7 @@
 
 #define MUCHO 2000
 
-//#include "archivo.h"
+/*#include "archivo.h"*/
 
 #include "structs.h"
 
@@ -42,7 +42,7 @@ static void ventanaSimulador()
 
 
   gtk_container_add(GTK_CONTAINER(dialog),grid);
-  gtk_grid_attach(GTK_GRID(grid),label,1,0,4,1);//COL,FILA,COL,FILA
+  gtk_grid_attach(GTK_GRID(grid),label,1,0,4,1);/*COL,FILA,COL,FILA*/
   gtk_grid_attach(GTK_GRID(grid),btoUC,2,3,1,1);
   gtk_grid_attach(GTK_GRID(grid),btoIR,2,1,1,2);
   gtk_grid_attach(GTK_GRID(grid),btoPC,2,4,1,1);
@@ -95,14 +95,14 @@ int main(int argc, char* argv[])
     memoria[i]->operando2  = 0;
     memoria[i]->cuartoDato = 0;
   }
-  gtk_init(&argc,&argv);//INICIA GTK
-  GtkWidget* window,*button,*grid, *botonArchivo; //VARIABLES
+  gtk_init(&argc,&argv);/*INICIA GTK*/
+  GtkWidget* window,*button,*grid, *botonArchivo; /*VARIABLES*/
 
-  window = gtk_window_new(GTK_WINDOW_TOPLEVEL); //crea la ventana
+  window = gtk_window_new(GTK_WINDOW_TOPLEVEL); /*crea la ventana*/
   gtk_window_set_title (GTK_WINDOW(window), "Simulador");
   g_signal_connect(window,"delete-event",G_CALLBACK(gtk_main_quit),NULL);
 
-  //aqui empieza la puz
+  /*aqui empieza la puz*/
   button = gtk_button_new_with_label("abre ventana");
   botonArchivo = gtk_button_new_with_label("Carga Archivo");
 
@@ -120,8 +120,8 @@ int main(int argc, char* argv[])
   gtk_container_add(GTK_CONTAINER(window),grid);
   gtk_grid_attach(GTK_GRID(grid),button,0,0,1,1);
   gtk_grid_attach(GTK_GRID(grid),botonArchivo,1,0,1,1);
-  gtk_widget_show_all(window);//showea todo
-  gtk_main();//start
+  gtk_widget_show_all(window);/*showea todo*/
+  gtk_main();/*start*/
 
   return 0;
 }

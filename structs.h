@@ -21,16 +21,6 @@ celda* memoria[256];
 celda  arregloMemoriaArchivo[256];
 
 
-//FUENTE8  FUENTE16
-//DESTINO8 DESTINO16
-//INDEX
-
-
-/*
-	1. Acerca de y ayuda
-	2. 
-*/ 
-
 int i;
 
 void cicloFetch();
@@ -79,7 +69,6 @@ void play()
 }
 void step()
 {
-	printf("%s\n","aa" );
 	if(memoria[PC]->codigoOp == 9){
 		gtk_widget_set_sensitive (btoPlay, FALSE);
 		gtk_widget_set_sensitive (btoStep, FALSE);
@@ -152,25 +141,25 @@ void reverse(char s[])
 char* itoa(int num, char* str, int base)
 {
     int i = 0,sign = 0; 
-    if (!num)//si es 0
+    if (!num)/*si es 0*/
     {
         str[i++] = '0';
         str[i] = '\0';
         return str;
     }
-    if (num < 0 && base == 10)//base 10
+    if (num < 0 && base == 10)/*base 10*/
     {
         sign = 1;
         num *= -1;
     }
-    while (num != 0)// cambia si ocupa letras
+    while (num != 0)/* cambia si ocupa letras*/
     {
         int rem = num % base;
         str[i++] = (rem > 9)? (rem-10) + 'A' : rem + '0';
         num = num/base;
     }
-    if (sign) str[i++] = '-'; // si es negativo pone el -
-    str[i] = '\0'; // le pone el final de str
+    if (sign) str[i++] = '-'; /* si es negativo pone el - */
+    str[i] = '\0'; /* le pone el final de str*/
     reverse(str);
     return str;
 }
@@ -247,7 +236,7 @@ void excInstruccion(char reg[],int programCounter)
 				break;
 		}
 	}
-	if(1){//instrucciones
+	if(1){/*instrucciones*/
 		if(!strcmp(ins,"mov"))
 		{
 			instruccion = 0;
@@ -290,7 +279,7 @@ void excInstruccion(char reg[],int programCounter)
 			band = 0;
 		}
 	}
-	if(band)   // parametro 1
+	if(band)   /* parametro 1*/
 	{
 		if((par1[0]>=0x30 && par1[0]<=0x39)||par1[0]=='-')
 		{
@@ -409,7 +398,7 @@ void excInstruccion(char reg[],int programCounter)
 			}
 		}
 	}
-	if(band)//parametro 2
+	if(band)/*parametro 2*/
 	{
 		if((par2[0]>=0x30 && par2[0]<=0x39 )||par2[0]=='-')
 		{
@@ -603,14 +592,14 @@ void abrirArchivo(GtkButton* button, gpointer func_data)
 
 	   	if (file)
 	   	{
-	       	fseek(file, 0, SEEK_END);//enceuntra ultimo byte del archivo
-	       	globalTamano = tamano = ftell(file);//tamaño del inicio al fin
-	       	rewind(file);//se pone al inicio del archivo				
-	       	buffer = (char*) malloc(sizeof(char) * (tamano + 1) );//crea el char* donde estara
-	       	lenRes = fread(buffer, sizeof(char), tamano, file);//lee todo
-	       	buffer[tamano] = '\0';//para que sea el fin del string
+	       	fseek(file, 0, SEEK_END);/*enceuntra ultimo byte del archivo*/
+	       	globalTamano = tamano = ftell(file);/*tamaño del inicio al fin*/
+	       	rewind(file);/*se pone al inicio del archivo*/				
+	       	buffer = (char*) malloc(sizeof(char) * (tamano + 1) );/*crea el char* donde estara*/
+	       	lenRes = fread(buffer, sizeof(char), tamano, file);/*lee todo*/
+	       	buffer[tamano] = '\0';/*para que sea el fin del string*/
 
-	       	if (tamano != lenRes)//si son de distintos tamaños estamos mamando
+	       	if (tamano != lenRes)/*si son de distintos tamaños estamos mamando*/
 	       	{
 	           	free(buffer);
 	           	buffer = NULL;
@@ -988,7 +977,7 @@ void mov (int codigo1, int codigo2, int cuartoDato)
 {
 	switch(codigo2){
 		case 0:
-			BD = ax; //BD<-ax
+			BD = ax; /*BD<-ax*/
 			break;
 		case 1:
 			BD = bx;
@@ -1027,21 +1016,21 @@ void mov (int codigo1, int codigo2, int cuartoDato)
 			BD  = cuartoDato;
 			MAR = BD;
 			MEM(LECTURA);
-			//MBR = memoria[MAR]->cuartoDato;
+			/*MBR = memoria[MAR]->cuartoDato;*/
 			BD  = MBR;
 			break;
 		case 13:
 			BD  = bl;
 			MAR = BD;
 			MEM(LECTURA);
-			//MBR = memoria[MAR]->cuartoDato;
+			/*MBR = memoria[MAR]->cuartoDato;*/
 			BD  = MBR;
 			break;
 		case 14:
 			BD  = bh;
 			MAR = BD;
 			MEM(LECTURA);
-			//MBR = memoria[MAR]->cuartoDato;
+			/*MBR = memoria[MAR]->cuartoDato;*/
 			BD  = MBR;
 			break;
 		case 15:
@@ -1101,21 +1090,21 @@ void mov (int codigo1, int codigo2, int cuartoDato)
 			BD  = PC;
 			MAR = BD;
 			MEM(ESCRITURA);
-			//memoria[cuartoDato1]->cuartoDato = BD;
+			/*memoria[cuartoDato1]->cuartoDato = BD;*/
 			break;
 		case 13:
 			MBR = BD;
 			BD  = bl;
 			MAR = BD;
 			MEM(ESCRITURA);
-			//memoria[bl]->cuartoDato = BD;
+			/*memoria[bl]->cuartoDato = BD;*/
 			break;
 		case 14:
 			MBR = BD;
 			BD  = bh;
 			MAR = BD;
 			MEM(ESCRITURA);
-			//memoria[bh]->cuartoDato = BD;
+			/*memoria[bh]->cuartoDato = BD;*/
 			break;
 	}
 }
@@ -1186,21 +1175,21 @@ void add(int codigo1, int codigo2, int cuartoDato)
 			BD  = cuartoDato;
 			MAR = BD;
 			MEM(LECTURA);
-			//MBR = memoria[MAR]->cuartoDato;
+			/*MBR = memoria[MAR]->cuartoDato;*/
 			BD  = MBR;
 			break;
 		case 13:
 			BD  = bl;
 			MAR = BD;
 			MEM(LECTURA);
-			//MBR = memoria[MAR]->cuartoDato;
+			/*MBR = memoria[MAR]->cuartoDato;*/
 			BD  = MBR;
 			break;
 		case 14:
 			BD  = bh;
 			MAR = BD;
 			MEM(LECTURA);
-			//MBR = memoria[MAR]->cuartoDato;
+			/*MBR = memoria[MAR]->cuartoDato;*/
 			BD  = MBR;
 			break;
 		case 15:
@@ -1249,21 +1238,21 @@ void add(int codigo1, int codigo2, int cuartoDato)
 			BD  = cuartoDato;
 			MAR = BD;
 			MEM(LECTURA);
-			//MBR = memoria[MAR]->cuartoDato;
+			/*MBR = memoria[MAR]->cuartoDato;*/
 			BD  = MBR;
 			break;
 		case 13:
 			BD  = bl;
 			MAR = BD;
 			MEM(LECTURA);
-			//MBR = memoria[MAR]->cuartoDato;
+			/*MBR = memoria[MAR]->cuartoDato;*/
 			BD  = MBR;
 			break;
 		case 14:
 			BD  = bh;
 			MAR = BD;
 			MEM(LECTURA);
-			//MBR = memoria[MAR]->cuartoDato;
+			/*MBR = memoria[MAR]->cuartoDato;*/
 			BD  = MBR;
 			break;
 		case 15:
@@ -1327,21 +1316,21 @@ void add(int codigo1, int codigo2, int cuartoDato)
 			BD  = cuartoDato;
 			MAR = BD;
 			MEM(ESCRITURA);
-			//memoria[cuartoDato1]->cuartoDato = BD;
+			/*memoria[cuartoDato1]->cuartoDato = BD;*/
 			break;
 		case 13:
 			MBR = BD;
 			BD  = bl;
 			MAR = BD;
 			MEM(ESCRITURA);
-			//memoria[bl]->cuartoDato = BD;
+			/*memoria[bl]->cuartoDato = BD;*/
 			break;
 		case 14:
 			MBR = BD;
 			BD  = bh;
 			MAR = BD;
 			MEM(ESCRITURA);
-			//memoria[bl]->cuartoDato = BD;
+			/*memoria[bl]->cuartoDato = BD;*/
 			break;
 	}
 }
@@ -1350,7 +1339,7 @@ void cmp(int codigo1, int codigo2, int cuartoDato)
 {
 	switch(codigo2){
 		case 0:
-			BD = ax; //BD<-ax
+			BD = ax; /*BD<-ax*/
 			break;
 		case 1:
 			BD = bx;
@@ -1389,21 +1378,21 @@ void cmp(int codigo1, int codigo2, int cuartoDato)
 			BD  = cuartoDato;
 			MAR = BD;
 			MEM(LECTURA);
-			//MBR = memoria[MAR]->cuartoDato;
+			/*MBR = memoria[MAR]->cuartoDato;*/
 			BD  = MBR;
 			break;
 		case 13:
 			BD  = bl;
 			MAR = BD;
 			MEM(LECTURA);
-			//MBR = memoria[MAR]->cuartoDato;
+			/*MBR = memoria[MAR]->cuartoDato;*/
 			BD  = MBR;
 			break;
 		case 14:
 			BD  = bh;
 			MAR = BD;
 			MEM(LECTURA);
-			//MBR = memoria[MAR]->cuartoDato;
+			/*MBR = memoria[MAR]->cuartoDato;*/
 			BD  = MBR;
 			break;
 		case 15:
@@ -1412,7 +1401,7 @@ void cmp(int codigo1, int codigo2, int cuartoDato)
 	B1 = BD;
 	switch(codigo1){
 		case 0:
-			BD = ax; //BD<-ax
+			BD = ax; /*BD<-ax*/
 			break;
 		case 1:
 			BD = bx;
@@ -1451,21 +1440,21 @@ void cmp(int codigo1, int codigo2, int cuartoDato)
 			BD  = cuartoDato;
 			MAR = BD;
 			MEM(LECTURA);
-			//MBR = memoria[MAR]->cuartoDato;
+			/*MBR = memoria[MAR]->cuartoDato;*/
 			BD  = MBR;
 			break;
 		case 13:
 			BD  = bl;
 			MAR = BD;
 			MEM(LECTURA);
-			//MBR = memoria[MAR]->cuartoDato;
+			/*MBR = memoria[MAR]->cuartoDato;*/
 			BD  = MBR;
 			break;
 		case 14:
 			BD  = bh;
 			MAR = BD;
 			MEM(LECTURA);
-			//MBR = memoria[MAR]->cuartoDato;
+			/*MBR = memoria[MAR]->cuartoDato;*/
 			BD  = MBR;
 			break;
 		case 15:
@@ -1510,16 +1499,16 @@ void outMicro()
 	concatBuffer(gtkbuffer2,g_strconcat("Dato salida MBR: ",itoa(MBR,temp,10),NULL));
 }
 
-//Esta Microinstruccion escribe en [MAR] lo que esta en MBR
-//  o lee de [MAR] y lo guarda en MBR
+/*Esta Microinstruccion escribe en [MAR] lo que esta en MBR
+o lee de [MAR] y lo guarda en MBR*/
 void MEM(int operacion)
 {	
-	//Si operacion es 1 -> read
+	/*Si operacion es 1 -> read*/
 	if(operacion)
 	{	
 		MBR = memoria[MAR]->cuartoDato;
 	}
-	else
+	else/*lectura*/
 	{
 		memoria[MAR]-> codigoOp   = -1;
 		memoria[MAR]-> operando1  =  0;
@@ -1647,17 +1636,20 @@ void jmp(int a)
 }
 void cicloFetch() 
 {
-	printf("%i\n",PC );
 	IR = prog[PC];
-	//Subciclo busqueda
-	BD = PC;      //BD  <- ax
-	MAR = BD;     //B1 <- BD
-	MEM(LECTURA); //sum
-	BD = MBR;     //BD  <- MBR
-	IR_fetch = BD;      //IR  <- BD
+	/*Subciclo busqueda*/
+	BD = PC;      /*BD  <- ax*/
+	MAR = BD;     /*B1 <- BD*/
+	MEM(LECTURA); /*sum*/
+	BD = MBR;     /*BD  <- MBR*/
+	IR_fetch = BD;      /*IR  <- BD*/
 
-	//Subciclo de Decodificacion
-	//Aqui no va nada porque en teoria ya lo tenemos 
+	/*Subciclo de Decodificacion
+	Subciclo indirecto
+	Esto se lleva a cabo durante la ejecucion de la instrucion	
+	Subciclo de ejecucion
+
+	en el siguiente switch*/
 	int inss = memoria[PC]->codigoOp;
 	int parr1 = memoria[PC]->operando1;
 	int parr2 = memoria[PC]->operando2;
@@ -1692,22 +1684,19 @@ void cicloFetch()
 			cli();
 			break;
 	} 
-	//Subciclo indirecto
-	//Esto se lleva a cabo durante la ejecucion de la instrucion	
-
-	//Subciclo de ejecucion
 
 
-	//subciclo de interrupcion
+
+	/*subciclo de interrupcion*/
 	if(interruptF)
 		printf("Ventanita xD\n");
 
-	PC++;          //inc PC
+	PC++;          /*inc PC*/
 }
 
 void actualizarRegistroX(int a)
 {
-	//a es el registro que cambio
+	/*a es el registro que cambio*/
 	switch(a)
 	{
 		case 0:
@@ -1726,7 +1715,7 @@ void actualizarRegistroX(int a)
 }
 void actualizarRegistroLH(int a)
 {
-	//a es el registro que cambio
+	/*a es el registro que cambio*/
 	switch(a)
 	{
 		case 0:
@@ -1746,13 +1735,12 @@ void actualizarRegistroLH(int a)
 			dl = getRTlow (dx);
 			break;
 	}
-}/*
+}
 void guardarAFOC(void)
 {
 	int arreglo[27];
 
 	FILE *archivito = fopen("afoc", "wb");
-	printf("GUARDANDO AFOC\n");
 
 	arreglo[0]  = size;
 	arreglo[1]  = lineasPrograma;
@@ -1782,14 +1770,12 @@ void guardarAFOC(void)
 	arreglo[25] = MAR;
 	arreglo[26] = MBR;
 	int i;
-	for(i = 0; i<27; i++)
-    	printf("%x ", arreglo[i]);
 	fwrite(arreglo, sizeof(int), 27, archivito);
 
 	fwrite(programa, sizeof(char), globalTamano,archivito);
 
 	for(i = 0; i < 256; i++)
-		fwrite(*memoria[i], sizeof(celda), 1, archivito);
+		fwrite(memoria[i], sizeof(celda), 1, archivito);
 
 	fclose(archivito);
 
@@ -1808,7 +1794,6 @@ void cargarAFOC(void)
 
 		fclose(archivito);
 
-		printf("\nCARGANDO AFOC\n");
 
 		size            = arreglo[0];
 		lineasPrograma  = arreglo[1];
@@ -1838,10 +1823,8 @@ void cargarAFOC(void)
 		MAR             = arreglo[25];
 		MBR             = arreglo[26];
 		int i;
-		for(i = 0; i<27; i++)
-	    	printf("%x ", arreglo[i]);
 
 	    for(i = 0; i<256; i++)
 	    	memoria[i] = &(arregloMemoriaArchivo[i]);
 	}
-}*/
+}
