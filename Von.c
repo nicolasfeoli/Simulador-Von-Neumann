@@ -1,98 +1,17 @@
 #include "stdio.h"
-#include <gtk/gtk.h>
+#include "stdlib.h"
 #include <string.h>
+#include "structs.h"
 
 #define MUCHO 2000
 
 /*#include "archivo.h"*/
 
-#include "structs.h"
 
 /* 
       cc `pkg-config --cflags gtk+-3.0` Von.c -o Von `pkg-config --libs gtk+-3.0`
 */
-static void ventanaSimulador()
-{
-  GtkWidget *btoListo,*btoCargar,*btoGuardar,*btoReset,*txtCode,*p,*consola,*dialog,*label,*grid,*btoUC,*btoIR,*btoPC,*btoBD,*btoRT,*btoFlag,*btoALU,*btoMAR,*btoMBR;
-  
-  GtkTextBuffer * gtkbuffer = gtk_text_buffer_new(NULL);
-  gtkbuffer2 = gtk_text_buffer_new(NULL);
 
-  p=createConsoleBox(gtkbuffer,buff,size);
-  consola= createConsoleBox(gtkbuffer2,"",0);
-
-  dialog = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-  
-  label = gtk_label_new("ARQUITECTURA VON NEWMAN");
-  grid = gtk_grid_new();
-  btoUC = gtk_button_new_with_label("UC");
-  btoIR = gtk_button_new_with_label("IR");
-  btoPC = gtk_button_new_with_label("PC");
-  btoBD = gtk_button_new_with_label("BD");
-  btoRT = gtk_button_new_with_label("RT");
-  btoFlag = gtk_button_new_with_label("Flags");
-  btoALU = gtk_button_new_with_label("ALU");
-  btoMAR = gtk_button_new_with_label("MAR");
-  btoMBR = gtk_button_new_with_label("MBR");
-  btoPlay = gtk_button_new_with_label("Play");
-  btoStep = gtk_button_new_with_label("Step");
-  btoReset = gtk_button_new_with_label("Reset");
-  btoListo = gtk_button_new_with_label("Ok");
-  btoGuardar =  gtk_button_new_with_label("Guardar");
-  btoCargar =  gtk_button_new_with_label("Cargar");
-  entrada = gtk_entry_new();
-
-
-  gtk_container_add(GTK_CONTAINER(dialog),grid);
-  gtk_grid_attach(GTK_GRID(grid),label,1,0,4,1);/*COL,FILA,COL,FILA*/
-  gtk_grid_attach(GTK_GRID(grid),btoUC,2,3,1,1);
-  gtk_grid_attach(GTK_GRID(grid),btoIR,2,1,1,2);
-  gtk_grid_attach(GTK_GRID(grid),btoPC,2,4,1,1);
-  gtk_grid_attach(GTK_GRID(grid),btoBD,3,1,1,4);
-  gtk_grid_attach(GTK_GRID(grid),btoRT,4,1,2,1);
-  gtk_grid_attach(GTK_GRID(grid),btoFlag,4,2,2,1);
-  gtk_grid_attach(GTK_GRID(grid),btoALU,4,3,2,1);
-  gtk_grid_attach(GTK_GRID(grid),btoMAR,4,4,1,1);
-  gtk_grid_attach(GTK_GRID(grid),btoMBR,5,4,1,1);
-  gtk_grid_attach(GTK_GRID(grid),p,6,1,2,4);
-  gtk_grid_attach(GTK_GRID(grid),consola,0,1,2,4);
-  gtk_grid_attach(GTK_GRID(grid),btoCargar,6,5,1,1);
-  gtk_grid_attach(GTK_GRID(grid),btoGuardar,7,5,1,1);
-  gtk_grid_attach(GTK_GRID(grid),btoPlay,2,5,1,1);
-  gtk_grid_attach(GTK_GRID(grid),btoStep,3,5,1,1);
-  gtk_grid_attach(GTK_GRID(grid),btoReset,4,5,2,1);
-  gtk_grid_attach(GTK_GRID(grid),entrada,0,5,1,1);
-  gtk_grid_attach(GTK_GRID(grid),btoListo,1,5,1,1);
-  gtk_widget_set_size_request(btoUC,50,100);
-  gtk_widget_set_size_request(p,250,100);
-  gtk_widget_set_size_request(consola,250,100);
-  gtk_widget_set_size_request(btoIR,100,100);
-  gtk_widget_set_size_request(btoPC,50,100);
-  gtk_widget_set_size_request(btoBD,100,70);
-  gtk_widget_set_size_request(btoRT,50,100);
-  gtk_widget_set_size_request(btoFlag,50,100);
-  gtk_widget_set_size_request(btoALU,50,100);
-  gtk_widget_set_size_request(btoMAR,50,50);
-  gtk_widget_set_size_request(btoMBR,50,50);
-  g_signal_connect(btoIR,"clicked",G_CALLBACK(ventanaIR),dialog);
-  g_signal_connect(btoPC,"clicked",G_CALLBACK(ventanaPC),dialog);
-  g_signal_connect(btoRT,"clicked",G_CALLBACK(ventanaRT),dialog);
-  g_signal_connect(btoFlag,"clicked",G_CALLBACK(ventanaFlags),dialog);
-  g_signal_connect(btoPlay,"clicked",G_CALLBACK(play),NULL);
-  g_signal_connect(btoStep,"clicked",G_CALLBACK(step),NULL);
-  g_signal_connect(btoReset,"clicked",G_CALLBACK(reset),NULL);
-  g_signal_connect(btoListo,"clicked",G_CALLBACK(onBtoListoClicked),NULL);
-  g_signal_connect(btoCargar,"clicked",G_CALLBACK(cargarAFOC),NULL);
-  g_signal_connect(btoGuardar,"clicked",G_CALLBACK(guardarAFOC),NULL);
-
-  gtk_widget_set_sensitive (btoUC, FALSE);
-  gtk_widget_set_sensitive (btoBD, FALSE);
-  gtk_widget_set_sensitive (p, FALSE);
-  gtk_widget_set_sensitive (consola, FALSE);
-  gtk_window_set_title (GTK_WINDOW(dialog), "Simulador");
-  gtk_window_set_resizable (GTK_WINDOW(dialog), TRUE);
-  gtk_widget_show_all(dialog);
-}
 int main(int argc, char* argv[])
 {
   for(i = 0; i < 256; i++)
@@ -103,15 +22,16 @@ int main(int argc, char* argv[])
     memoria[i]->operando2  = 0;
     memoria[i]->cuartoDato = 0;
   }
+  programa = (char*)malloc(10000);
   gtk_init(&argc,&argv);/*INICIA GTK*/
-  GtkWidget* window,*button,*grid, *botonArchivo; /*VARIABLES*/
+  GtkWidget* window,*button,*grid, *botonArchivo,*botonAyuda,*botonAcercaDe; /*VARIABLES*/
 
   window = gtk_window_new(GTK_WINDOW_TOPLEVEL); /*crea la ventana*/
   gtk_window_set_title (GTK_WINDOW(window), "Simulador");
   g_signal_connect(window,"delete-event",G_CALLBACK(gtk_main_quit),NULL);
 
   /*aqui empieza la puz*/
-  button = gtk_button_new_with_label("abre ventana");
+  button = gtk_button_new_with_label("Abrir simulador");
   botonArchivo = gtk_button_new_with_label("Carga Archivo");
 
   char* bufferMemoria; 
@@ -124,6 +44,16 @@ int main(int argc, char* argv[])
   gtk_container_set_border_width(GTK_CONTAINER(window),50);
 
   grid = gtk_grid_new();
+
+  botonAyuda = gtk_button_new_with_label("Ayuda");
+  botonAcercaDe = gtk_button_new_with_label("Acerca de...");
+  gtk_widget_set_size_request(botonAyuda,100,50);
+  gtk_widget_set_size_request(botonAcercaDe,100,50);
+
+  g_signal_connect(botonAyuda,"clicked",G_CALLBACK(ventanaAyuda),NULL);
+  g_signal_connect(botonAcercaDe,"clicked",G_CALLBACK(ventanaAcercaDe),NULL);
+  gtk_grid_attach(GTK_GRID(grid),botonAyuda,0,1,1,1);
+  gtk_grid_attach(GTK_GRID(grid),botonAcercaDe,1,1,1,1);
   
   gtk_container_add(GTK_CONTAINER(window),grid);
   gtk_grid_attach(GTK_GRID(grid),button,0,0,1,1);

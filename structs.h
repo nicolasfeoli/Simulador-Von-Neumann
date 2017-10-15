@@ -1,12 +1,11 @@
 #include "stdio.h"
 #include "stdlib.h"
 #include <string.h>
+#include <gtk/gtk.h>
 
 #define LECTURA 1
-
 #define ESCRITURA 0
 
-void MEM(int);
 
 typedef struct {
 	int codigoOp;
@@ -20,43 +19,209 @@ static char prog[256][500];
 celda* memoria[256];
 celda  arregloMemoriaArchivo[256];
 
+char * IR = "", 
+	* buff = "", 
+	* programa;
 
-int i;
+int globalTamano = 0, 
+	size = 0, 
+	lineasPrograma = 0, 
+	IR_fetch,
+	seg = 0,
+	i;
 
-void cicloFetch();
-void getRenglones();
-void clearBuffer();
-gchar* getTextBuffer();
-void concatBuffer();
-void actualizarRegistroX();
-void actualizarRegistroLH();
-
-char*  programa;
-int globalTamano = 0;
-char* IR = "", *buff = "";
-int size = 0, lineasPrograma = 0;
-int IR_fetch;
 static int PC = 0,
 	ah,al,ax  = 0,
 	bh,bl,bx  = 0,
 	ch,cl,cx  = 0,
 	dl,dh,dx  = 0,
 	zeroF      = 0, signF  = 0,
-	interruptF = 0, carryF = 0;
+	interruptF = 0, carryF = 0,
+	B1 =0,B2=0,B3=0,B4=0,BD =0, MAR=0, MBR=0;
 
-static int B1 =0,B2=0,B3=0,B4=0;
-static int BD =0;
-static int MAR=0;
-static int MBR=0;
-int seg=0;
+GtkWidget *AXdec,
+		*BXdec,
+		*CXdec,
+		*DXdec, 
+		*entrada,
+		*btoPlay,
+		*btoStep;
 
-GtkWidget *AXdec,*BXdec,*CXdec,*DXdec, *entrada,*btoPlay,*btoStep;
-GtkTextBuffer * gtkbuffer2;
+GtkTextBuffer * gtkbuffer2,
+		* gtkbuffer;
 
+void ventanaSimulador();
+void ventanaAcercaDe();
+void ventanaAyuda();
+void play();
+void step();
+void reset();
+void resetALL();
+GtkWidget * createConsoleBox();
+gchar * getTextBuffer();
+void clearBuffer();
+void concatBuffer();
+void reverse();
+char * itoa();
+void onBtoListoClicked();
+void onBtoInterruptClicked();
+void ventanaError();
+void ventanaInterrupt();
+void excInstruccion();
+void getRenglones();
+gchar * get_dialog_path_selection();
+void abrirArchivo();
+int powW();
+int getRThigh();
+int getRTlow();
+void actualizarRT();
+void onBtoCnlClicked();
+void ventanaIR();
+void ventanaPC();
+void ventanaRT();
+void ventanaFlags();
+void ventanaALU();
+void ventanaMMB();
+void mulAlu();
+void sumAlu();
+void restAlu();
+void divAlu();
+void andAlu();
+void orAlu();
+void xorAlu();
+void notAlu();
+void shlAlu();
+void shrAlu();
+void mov();
+void add();
+void cmp();
+void test();
+void inMicro();
+void outMicro();
+void MEM();
+void cli();
+void sti();
+void in();
+void out();
+void jz();
+void jmp();
+void cicloFetch();
+void actualizarRegistroX();
+void actualizarRegistroLH();
+void guardarAFOC();
+void cargarAFOC();
+
+
+
+
+void ventanaSimulador()
+{
+  GtkWidget *btoListo,*btoCargar,*btoInt,*btoGuardar,*btoReset,*txtCode,*p,*consola,*dialog,*label,*grid,*btoUC,*btoIR,*btoPC,*btoBD,*btoRT,*btoFlag,*btoALU,*btoMR;
+  
+  gtkbuffer = gtk_text_buffer_new(NULL);
+  gtkbuffer2 = gtk_text_buffer_new(NULL);
+
+  p=createConsoleBox(gtkbuffer,buff,size);
+  consola= createConsoleBox(gtkbuffer2,"",0);
+
+  dialog = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+  
+  label = gtk_label_new("ARQUITECTURA VON NEWMAN");
+  grid = gtk_grid_new();
+  btoUC = gtk_button_new_with_label("UC");
+  btoIR = gtk_button_new_with_label("IR");
+  btoPC = gtk_button_new_with_label("PC");
+  btoBD = gtk_button_new_with_label("BD");
+  btoRT = gtk_button_new_with_label("RT");
+  btoFlag = gtk_button_new_with_label("Flags");
+  btoALU = gtk_button_new_with_label("ALU");
+  btoMR = gtk_button_new_with_label("MAR\nMBR");
+  btoPlay = gtk_button_new_with_label("Play");
+  btoStep = gtk_button_new_with_label("Step");
+  btoReset = gtk_button_new_with_label("Reset");
+  btoListo = gtk_button_new_with_label("Ok");
+  btoGuardar =  gtk_button_new_with_label("Guardar");
+  btoCargar =  gtk_button_new_with_label("Cargar");
+  btoInt =  gtk_button_new_with_label("Int");
+  entrada = gtk_entry_new();
+
+
+  gtk_container_add(GTK_CONTAINER(dialog),grid);
+  gtk_grid_attach(GTK_GRID(grid),label,1,0,4,1);/*COL,FILA,COL,FILA*/
+  gtk_grid_attach(GTK_GRID(grid),btoUC,2,3,1,1);
+  gtk_grid_attach(GTK_GRID(grid),btoIR,2,1,1,2);
+  gtk_grid_attach(GTK_GRID(grid),btoPC,2,4,1,1);
+  gtk_grid_attach(GTK_GRID(grid),btoBD,3,1,1,4);
+  gtk_grid_attach(GTK_GRID(grid),btoRT,4,1,2,1);
+  gtk_grid_attach(GTK_GRID(grid),btoFlag,4,2,2,1);
+  gtk_grid_attach(GTK_GRID(grid),btoALU,4,3,2,1);
+  gtk_grid_attach(GTK_GRID(grid),btoMR,4,4,1,1);
+  gtk_grid_attach(GTK_GRID(grid),btoInt,5,4,1,1);
+  gtk_grid_attach(GTK_GRID(grid),p,6,1,2,4);
+  gtk_grid_attach(GTK_GRID(grid),consola,0,1,2,4);
+  gtk_grid_attach(GTK_GRID(grid),btoCargar,6,5,1,1);
+  gtk_grid_attach(GTK_GRID(grid),btoGuardar,7,5,1,1);
+  gtk_grid_attach(GTK_GRID(grid),btoPlay,2,5,1,1);
+  gtk_grid_attach(GTK_GRID(grid),btoStep,3,5,1,1);
+  gtk_grid_attach(GTK_GRID(grid),btoReset,4,5,2,1);
+  gtk_grid_attach(GTK_GRID(grid),entrada,0,5,1,1);
+  gtk_grid_attach(GTK_GRID(grid),btoListo,1,5,1,1);
+  gtk_widget_set_size_request(btoUC,50,100);
+  gtk_widget_set_size_request(p,250,100);
+  gtk_widget_set_size_request(consola,250,100);
+  gtk_widget_set_size_request(btoIR,100,100);
+  gtk_widget_set_size_request(btoPC,50,100);
+  gtk_widget_set_size_request(btoBD,100,70);
+  gtk_widget_set_size_request(btoRT,50,100);
+  gtk_widget_set_size_request(btoFlag,50,100);
+  gtk_widget_set_size_request(btoALU,50,100);
+  gtk_widget_set_size_request(btoMR,50,50);
+  g_signal_connect(btoIR,"clicked",G_CALLBACK(ventanaIR),dialog);
+  g_signal_connect(btoPC,"clicked",G_CALLBACK(ventanaPC),dialog);
+  g_signal_connect(btoRT,"clicked",G_CALLBACK(ventanaRT),dialog);
+  g_signal_connect(btoFlag,"clicked",G_CALLBACK(ventanaFlags),dialog);
+  g_signal_connect(btoALU,"clicked",G_CALLBACK(ventanaALU),dialog);
+  g_signal_connect(btoPlay,"clicked",G_CALLBACK(play),NULL);
+  g_signal_connect(btoStep,"clicked",G_CALLBACK(step),NULL);
+  g_signal_connect(btoReset,"clicked",G_CALLBACK(reset),NULL);
+  g_signal_connect(btoListo,"clicked",G_CALLBACK(onBtoListoClicked),NULL);
+  g_signal_connect(btoCargar,"clicked",G_CALLBACK(cargarAFOC),NULL);
+  g_signal_connect(btoMR,"clicked",G_CALLBACK(ventanaMMB),NULL);
+  g_signal_connect(btoInt,"clicked",G_CALLBACK(onBtoInterruptClicked),NULL);
+  g_signal_connect(btoGuardar,"clicked",G_CALLBACK(guardarAFOC),NULL);
+
+  gtk_widget_set_sensitive (btoUC, FALSE);
+  gtk_widget_set_sensitive (btoBD, FALSE);
+  gtk_widget_set_sensitive (p, FALSE);
+  gtk_widget_set_sensitive (consola, FALSE);
+  gtk_window_set_title (GTK_WINDOW(dialog), "Simulador");
+  gtk_window_set_resizable (GTK_WINDOW(dialog), FALSE);
+  gtk_widget_show_all(dialog);
+}
+
+void ventanaAyuda()
+{
+  GtkWidget *dialog,*label,*lblerr;
+  dialog = gtk_dialog_new_with_buttons("AYUDA",NULL,GTK_DIALOG_MODAL,GTK_STOCK_OK,GTK_RESPONSE_OK,NULL);
+  label = gtk_label_new("AYUDA:\n Para iniciar una simulación, seleccione un archivo que contenga código ensamblador.\nLuego toque el botón llamado abrir ventana, para dar inicio a la simulación.\n Para más información y ayuda revise el manual de usuario:\nhttp://bit.ly/2gFMfpy");
+  gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))),label,0,0,0);
+  gtk_widget_show_all(dialog);
+  gint response = gtk_dialog_run(GTK_DIALOG(dialog));
+  gtk_widget_destroy(dialog);
+}
+
+void ventanaAcercaDe()
+{
+  GtkWidget *dialog,*label,*lblerr;
+  dialog = gtk_dialog_new_with_buttons("ACERCA DE",NULL,GTK_DIALOG_MODAL,GTK_STOCK_OK,GTK_RESPONSE_OK,NULL);
+  label = gtk_label_new("-------------------------------------------------------------------------------------------\n       -SIMULADOR ARQUITECTURA VON NEUMANN -\n-------------------------------------------------------------------------------------------\nHECHO POR:\n\tJUAN DE DIOS MARTINEZ CEDEÑO\n\tNICOLAS FEOLI CHACON\n-------------------------------------------------------------------------------------------\n LENGUAJES DE PROGRAMACION\n\tKIRSTEIN GÄTJENS\n\tGRUPO 2");
+  gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))),label,0,0,0);
+  gtk_widget_show_all(dialog);
+  gint response = gtk_dialog_run(GTK_DIALOG(dialog));
+  gtk_widget_destroy(dialog);
+}
 void play()
 {
-	
-
 	while(PC!=lineasPrograma){
 		if(memoria[PC]->codigoOp == 9){
 			gtk_widget_set_sensitive (btoPlay, FALSE);
@@ -76,7 +241,6 @@ void step()
 	}
 	else
 		cicloFetch();
-
 }
 void reset()
 {
@@ -86,7 +250,26 @@ void reset()
 		memoria[tp]->codigoOp = memoria[tp]->operando1 = memoria[tp]->operando2 = memoria[tp]->cuartoDato = 0;
 	}
 
+	i = 0;
+
+	IR = "";
+	buff = "";
+	PC = ah = al = ax = bh = seg = bl = bx = ch = cl = cx = dh = dl = dx = zeroF = signF = interruptF = carryF = 0;
+	B1 = B2 = B3 = B4 = BD = MAR = MBR = 0;
+
+	clearBuffer(gtkbuffer2);
 	getRenglones(programa);
+}
+void resetALL()
+{
+	int tp = 0;
+	int t = 0;
+	for(;tp<256;tp++)
+	{
+		memoria[tp]->codigoOp = memoria[tp]->operando1 = memoria[tp]->operando2 = memoria[tp]->cuartoDato = 0;
+		arregloMemoriaArchivo[tp].codigoOp = arregloMemoriaArchivo[tp].operando1 = arregloMemoriaArchivo[tp].operando2 = arregloMemoriaArchivo[tp].cuartoDato = 0;
+		memset(&prog[tp][0], 0, sizeof(prog[tp]));
+	}
 
 	i = 0;
 
@@ -96,8 +279,16 @@ void reset()
 	B1 = B2 = B3 = B4 = BD = MAR = MBR = 0;
 
 	clearBuffer(gtkbuffer2);
-}
+	clearBuffer(gtkbuffer);
 
+	programa = (char*)malloc(10000);
+
+	globalTamano = 0;/**/
+
+	size = lineasPrograma = 0;
+	IR_fetch=0;
+	seg=0;
+}
 GtkWidget* createConsoleBox(GtkTextBuffer * gtkbuffer,char* b,int s)
 {
     gtk_text_buffer_set_text(gtkbuffer,b,s);
@@ -170,6 +361,10 @@ void onBtoListoClicked()
 	cicloFetch();
 	gtk_entry_set_text(GTK_ENTRY(entrada),"");
 }
+void onBtoInterruptClicked()
+{
+	interruptF = 1;
+}
 void ventanaError(int pp,char*err)
 {
   GtkWidget *dialog,*label,*lblerr;
@@ -199,6 +394,7 @@ void ventanaInterrupt()
 }
 void excInstruccion(char reg[],int programCounter)
 {
+
 	char ins[5],par1[5],par2[5],tmp[3];
 	memset(&ins[0], 0, sizeof(ins));
 	memset(&par1[0], 0, sizeof(par1));
@@ -584,6 +780,9 @@ gchar *get_dialog_path_selection()
 }
 void abrirArchivo(GtkButton* button, gpointer func_data) 
 { 
+	/*reset();*/
+	resetALL();
+	clearBuffer(gtkbuffer);
 	const char *filename = get_dialog_path_selection();
 	char *buffer = NULL;
 	if(filename){
@@ -659,7 +858,7 @@ void onBtoOKClicked(GtkButton* button, gpointer func_data)
 	gtk_widget_destroy (GTK_WIDGET(func_data));
 }
 
-static void ventanaIR()
+void ventanaIR()
 {
 	GtkWidget *window,*grid,*label;
 
@@ -678,7 +877,7 @@ static void ventanaIR()
 
 
 }
-static void ventanaPC()
+void ventanaPC()
 {
 	GtkWidget *dialog,*entry;
 
@@ -698,7 +897,7 @@ static void ventanaPC()
 
 	gtk_widget_destroy(dialog);
 }
-static void ventanaRT()
+void ventanaRT()
 {
 	GtkWidget *window,*grid,*btoOK,*btoCnl,*lblCambios,*AX,*BX,*CX,*DX,*DEC,*HEX,*BIN,*AXhex,*AXbin,*BXhex,*BXbin,*CXhex,*CXbin,*DXhex,*DXbin;
 	window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
@@ -783,7 +982,7 @@ static void ventanaRT()
   	gtk_window_set_resizable (GTK_WINDOW(window), FALSE);
   	gtk_widget_show_all(window);
 }
-static void ventanaFlags()
+void ventanaFlags()
 {
 	GtkWidget *window,*grid,*lblSign,*lblCarry,*lblInterrupt,*lblZero,*carry,*sign,*interrupt,*zero;
 
@@ -824,7 +1023,7 @@ static void ventanaFlags()
   	gtk_window_set_resizable (GTK_WINDOW(window), FALSE);
   	gtk_widget_show_all(window);
 }
-static void ventanaALU()
+void ventanaALU()
 {
 	GtkWidget *window,*grid,*lblB1,*lblB2,*lblB3,*lblB4,*lB1,*lB2,*lB3,*lB4;
 
@@ -865,6 +1064,41 @@ static void ventanaALU()
   	gtk_window_set_resizable (GTK_WINDOW(window), FALSE);
   	gtk_widget_show_all(window);
 }
+void ventanaMMB()
+{
+	GtkWidget *window,*grid,*lblmar,*lblmbr,*lblBd,*lmar,*lmbr,*lbd;
+
+	window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+	grid = gtk_grid_new();
+	lblmbr = gtk_label_new("MBR   ->");
+	lblmar = gtk_label_new("MAR   ->");
+	lblBd = gtk_label_new("BD    ->");
+	char t1[5],t2[5],t3[5];
+	lmar = gtk_label_new(itoa(MAR,t1,10));
+	lmbr = gtk_label_new(itoa(MBR,t2,10));
+	lbd = gtk_label_new(itoa(BD,t3,10));
+
+	gtk_container_add(GTK_CONTAINER(window),grid);
+	gtk_grid_attach(GTK_GRID(grid),lblmar,0,0,1,1);
+	gtk_grid_attach(GTK_GRID(grid),lblmbr,0,1,1,1);
+	gtk_grid_attach(GTK_GRID(grid),lmar,1,0,1,1);
+	gtk_grid_attach(GTK_GRID(grid),lmbr,1,1,1,1);
+
+	gtk_grid_attach(GTK_GRID(grid),lblBd,2,1,1,1);
+	gtk_grid_attach(GTK_GRID(grid),lbd,3,1,1,1);
+
+	gtk_widget_set_size_request(lblmar,50,30);
+	gtk_widget_set_size_request(lblmbr,50,30);
+	gtk_widget_set_size_request(lblBd,50,30);
+
+	gtk_widget_set_size_request(lmar,40,30);
+	gtk_widget_set_size_request(lmbr,40,30);
+	gtk_widget_set_size_request(lbd,40,30);
+
+	gtk_window_set_title (GTK_WINDOW(window), "MAR - MBR - BD");
+  	gtk_window_set_resizable (GTK_WINDOW(window), FALSE);
+  	gtk_widget_show_all(window);
+}
 /*
 MICROINSTRUCCIONES
 
@@ -886,7 +1120,7 @@ void mulAlu(void)
 	B3 = B2 * B1;
 	if(!B3) zeroF = 1;
 	if(B3 > 65535){B3 = B3%65535; carryF=1;}
-	B2 = B1 = B4 = 0;
+	/*B2 = B1 = B4 = 0;*/
 }
 
 void sumAlu(void)
@@ -896,7 +1130,7 @@ void sumAlu(void)
 	if(B3 > 65535){B3 = B3%65535; carryF=1;}
 	if(B3 < 0) carryF = signF = 1;
 	else carryF = signF = 0;
-	B2 = B1 = B4 = 0;
+	/*B2 = B1 = B4 = 0;*/
 }
 
 void restAlu(void)
@@ -906,7 +1140,7 @@ void restAlu(void)
 	else carryF = signF = 0;
 	if(!B3) zeroF = 1;
 	else zeroF = 0;
-	B2 = B1 = B4 = 0;
+	/*B2 = B1 = B4 = 0;*/
 }
 
 void divAlu(void)
@@ -922,7 +1156,7 @@ void divAlu(void)
 void andAlu(void)
 {
 	B3 = B1 & B2;
-	B2 = B1 = B4 = 0;
+	/*B2 = B1 = B4 = 0;*/
 	if(B3 > 65535){B3 = B3%65535; carryF=1;}
 	if(B3 < 0) signF = 1;
 	if(!B3) zeroF = 1;
@@ -931,7 +1165,7 @@ void andAlu(void)
 void orAlu(void)
 {
 	B3 = B1 | B2;
-	B2 = B1 = B4 = 0;
+	/*B2 = B1 = B4 = 0;*/
 	if(B3 > 65535){B3 = B3%65535; carryF=1;}
 	if(B3 < 0) signF = 1;
 	if(!B3) zeroF = 1;
@@ -940,7 +1174,7 @@ void orAlu(void)
 void xorAlu(void)
 {
 	B3 = B1 ^ B2;
-	B2 = B1 = B4 = 0;
+	/*B2 = B1 = B4 = 0;*/
 	if(B3 > 65535){B3 = B3%65535; carryF=1;}
 	if(B3 < 0) signF = 1;
 	if(!B3) zeroF = 1;
@@ -949,7 +1183,7 @@ void xorAlu(void)
 void notAlu(void)
 {
 	B3 = !B1;
-	B2 = B1 = B4 = 0;
+	/*B2 = B1 = B4 = 0;*/
 	if(B3 > 65535){B3 = B3%65535; carryF=1;}
 	if(B3 < 0) signF = 1;
 	if(!B3) zeroF = 1;
@@ -958,7 +1192,7 @@ void notAlu(void)
 void shlAlu(void)
 {
 	B3 = B1 << B2;
-	B2 = B1 = B4 = 0;
+	/*B2 = B1 = B4 = 0;*/
 	if(B3 > 65535){B3 = B3%65535; carryF=1;}
 	if(B3 < 0) signF = 1;
 	if(!B3) zeroF = 1;
@@ -967,7 +1201,7 @@ void shlAlu(void)
 void shrAlu(void)
 {
 	B3 = B1 >> B2;
-	B2 = B1 = B4 = 0;
+	/*B2 = B1 = B4 = 0;*/
 	if(B3 > 65535){B3 = B3%65535; carryF=1;}
 	if(B3 < 0) signF = 1;
 	if(!B3) zeroF = 1;
@@ -1109,29 +1343,6 @@ void mov (int codigo1, int codigo2, int cuartoDato)
 	}
 }
 
-
-/*
-
-**********DATOS*********
-Madre = hija + 24
-Madre + 6 = 3·(hija + 6)
-
-************************
-(hija + 24) + 6 = 3·(hija + 6)
-hija + 30 = 3·hija + 3·6
-30 = 3·hija - hija + 18
-30 = 2·hija + 18
-(30-18)/2 = hija
-6 = hija
-
-*********ACTUAL*********
-Madre = 6 + 24 = 30
-Hija = 6
-
-*******DENTRO 6*******
-Madre = 36
-Hija = 12
-*/
 void add(int codigo1, int codigo2, int cuartoDato)
 {
 	switch(codigo2){
@@ -1688,8 +1899,10 @@ void cicloFetch()
 
 
 	/*subciclo de interrupcion*/
-	if(interruptF)
-		printf("Ventanita xD\n");
+	if(interruptF){
+		interruptF = 0;
+		ventanaInterrupt();
+	}
 
 	PC++;          /*inc PC*/
 }
@@ -1771,7 +1984,6 @@ void guardarAFOC(void)
 	arreglo[26] = MBR;
 	arreglo[27] = globalTamano;
 	int i;
-	printf("%i\n", arreglo[27]);
 	fwrite(arreglo, sizeof(int), 28, archivito);
 
 	fwrite(programa, sizeof(char), globalTamano,archivito);
@@ -1785,17 +1997,12 @@ void guardarAFOC(void)
 
 void cargarAFOC(void)
 {
-	printf("%s\n", "aaaaa");
 	int arreglo[28];
-	printf("%s\n","aa");
 
 	FILE *archivito = fopen("AFOC", "rb");
-	printf("%s\n","a1");
 	if (archivito != NULL)
 	{
-		printf("%s\n","a2");
 		fread(arreglo,sizeof(int),28,archivito);
-		printf("%s\n","a3");
 		size            = arreglo[0];
 		lineasPrograma  = arreglo[1];
 		IR_fetch        = arreglo[2];
@@ -1824,21 +2031,16 @@ void cargarAFOC(void)
 		MAR             = arreglo[25];
 		MBR             = arreglo[26];
 		globalTamano    = arreglo[27];
-		printf("%s\n","a4");
-		printf("%i\n", globalTamano);
 
 		fread(programa, sizeof(char), globalTamano, archivito);
-		printf("%s\n","a5");
 		fread(arregloMemoriaArchivo, sizeof(celda),256,archivito);
-		printf("%s\n","a6");
 		fclose(archivito);
 
-		printf("%s\n", programa);
+		concatBuffer(gtkbuffer,programa);
+
 
 		int i;
-		printf("%s\n","a7");
 	    for(i = 0; i<256; i++)
 	    	memoria[i] = &(arregloMemoriaArchivo[i]);
-	    printf("%s\n","a8");
 	}
 }
