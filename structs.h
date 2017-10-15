@@ -1997,6 +1997,7 @@ void guardarAFOC(void)
 
 void cargarAFOC(void)
 {
+	resetALL();
 	int arreglo[28];
 
 	FILE *archivito = fopen("AFOC", "rb");

@@ -192,8 +192,8 @@ void ventanaSimulador()
 
   gtk_widget_set_sensitive (btoUC, FALSE);
   gtk_widget_set_sensitive (btoBD, FALSE);
-  /*gtk_widget_set_sensitive (p, FALSE);
-  gtk_widget_set_sensitive (consola, FALSE);*/
+  gtk_widget_set_sensitive (p, FALSE);
+  gtk_widget_set_sensitive (consola, FALSE);
   gtk_window_set_title (GTK_WINDOW(dialog), "Simulador");
   gtk_window_set_resizable (GTK_WINDOW(dialog), FALSE);
   gtk_widget_show_all(dialog);
@@ -1997,6 +1997,7 @@ void guardarAFOC(void)
 
 void cargarAFOC(void)
 {
+	resetALL();
 	int arreglo[28];
 
 	FILE *archivito = fopen("AFOC", "rb");
