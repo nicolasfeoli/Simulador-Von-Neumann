@@ -1,0 +1,5 @@
+mov ax, 257
+add ax, 2
+sti
+out al
+out ah
